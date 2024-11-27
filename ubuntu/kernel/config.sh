@@ -25,7 +25,7 @@ log "Configuring the kernel..."
 make defconfig || handle_error "Failed to create config file"
 
 # Change the local version to our own version
-sed -i 's/^CONFIG_LOCALVERSION=.*$/CONFIG_LOCALVERSION="$name"/' .config
+sed -i 's/^CONFIG_LOCALVERSION=.*$/CONFIG_LOCALVERSION="'$name'"/' .config
 
 # Turn off BTF
 sed -i 's/^CONFIG_DEBUG_INFO_BTF=.*$/CONFIG_DEBUG_INFO_BTF=n/' .config
