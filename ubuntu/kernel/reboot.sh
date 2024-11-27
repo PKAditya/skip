@@ -13,7 +13,8 @@ mkdir /usr/lib/reboot_tmp &> /dev/null
 log=/usr/lib/reboot_tmp/log
 rm $log &> /dev/null
 touch $log
-loc=$(pwd)
+raw=$(pwd)
+loc=$raw/ubuntu/kernel
 
 
 log() {

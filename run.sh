@@ -17,7 +17,6 @@ echo "Current user: $user"
 echo " "
 
 echo ""
-sleep 20 
 if [ "$distro" == "ubuntu" ]; then
   if [ "$user" == "amd" ]; then
           echo 'Amd$1234!' | sudo -S $loc/ubuntu/run.sh $user
