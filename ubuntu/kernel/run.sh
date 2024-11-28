@@ -2,6 +2,7 @@
 
 loc=$1
 KERNEL_DIR=$2
+LOCAL_VERSION="-auto-base"
 
 mkdir /usr/lib/automation-logs/reboot_tmp &> /dev/null
 log=/usr/lib/automation-logs/reboot_tmp/log
@@ -30,7 +31,7 @@ if [[ -d $KERNEL_DIR ]]; then
 	cd "$KERNEL_DIR"
         log "Directory $KERNEL_DIR exists"
 	log "Running the configuration script: $loc/ubuntu/kernel/config.sh"
-        $loc/ubuntu/kernel/config.sh $KERNEL_DIR _auto_base_ || handle_error "Failed running $loc/ubuntu/kernel/config.sh"
+        $loc/ubuntu/kernel/config.sh $KERNEL_DIR $LOCAL_VERSION || handle_error "Failed running $loc/ubuntu/kernel/config.sh"
 	log "Successfully ran the configuration"
 
 	log "Proceeding with building the kernel configured with the local version"
