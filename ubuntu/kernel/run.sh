@@ -1,9 +1,10 @@
 #!/bin/bash
 
 loc=$1
+KERNEL_DIR=$2
 
-mkdir /usr/lib/reboot_tmp &> /dev/null
-log=/usr/lib/reboot_tmp/log
+mkdir /usr/lib/automation-logs/reboot_tmp &> /dev/null
+log=/usr/lib/reboot_tmp/automation-logs/log
 rm $log &> /dev/null
 touch $log
 
