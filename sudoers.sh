@@ -61,16 +61,6 @@ fi
 # Use visudo to check syntax before making changes
 TEMP_SUDOERS=$(mktemp)
 
-# Find the secure_path line and modify it
-#awk '
-#/^Defaults.*secure_path/ {
-#    if ($0 !~ /\/usr\/local\/bin/) {
-#        # Remove any trailing quotes and add /usr/local/bin
-#        gsub(/"$/, "", $0)
-#        print $0 ":/usr/local/bin\""
-#        next
-#    }
-#}
 
 
 
