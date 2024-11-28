@@ -38,7 +38,7 @@ read -p "Enter kernel repository path: " KERNEL_DIR
 
 
 # Modifying sudoers 
-echo 'Amd$1234!' | sudo -S $loc/sudoer.sh $user || handle_error "Couldn't run sudoers modification script"
+echo 'Amd$1234!' | sudo -S $loc/sudoers.sh $user || handle_error "Couldn't run sudoers modification script"
 
 echo ""
 if [ "$distro" == "ubuntu" ]; then
