@@ -45,7 +45,7 @@ if [ "$distro" == "ubuntu" ]; then
   if [ "$user" == "amd" ]; then
           echo 'Amd$1234!' | sudo -S $loc/ubuntu/kernel/run.sh $loc $KERNEL_DIR
   else
-          sudo $loc/ubuntu/run.sh $user
+          sudo $loc/ubuntu/kernel/run.sh $loc $KERNEL_DIR
   fi
 else
   if [ "$user" == "amd" ]; then
