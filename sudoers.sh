@@ -23,14 +23,14 @@ if grep -q "$sudoers_pattern" /etc/sudoers; then
 else
     # Create a backup
     cp /etc/sudoers /etc/sudoers.bak
-    log "Created a backup file before modifying the sudoers file.
+    log "Created a backup file before modifying the sudoers file".
  
     # Create temporary file
     TEMP_SUDOERS=$(mktemp)
     
     # Add the user entry
     cp /etc/sudoers "$TEMP_SUDOERS"
-    echo "$user ALL=\(ALL\) ALL" >> "$TEMP_SUDOERS"
+    echo "$user ALL=(ALL) ALL" >> "$TEMP_SUDOERS"
     
     # Verify syntax using visudo
     if visudo -c -f "$TEMP_SUDOERS"; then
