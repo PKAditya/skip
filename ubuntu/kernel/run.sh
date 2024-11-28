@@ -4,7 +4,7 @@ loc=$1
 KERNEL_DIR=$2
 
 mkdir /usr/lib/automation-logs/reboot_tmp &> /dev/null
-log=/usr/lib/reboot_tmp/automation-logs/log
+log=/usr/lib/automation-logs/reboot_tmp/log
 rm $log &> /dev/null
 touch $log
 
@@ -20,7 +20,7 @@ handle_error() {
 }
 
 # user input for kernel directory
-read -p "Enter the Kernel repository path: " KERNEL_DIR
+# read -p "Enter the Kernel repository path: " KERNEL_DIR
 
 
 $loc/ubuntu/kernel/dependencies.sh || handle_error "Failed to run $loc/ubuntu/kernel/dependencies.sh"
