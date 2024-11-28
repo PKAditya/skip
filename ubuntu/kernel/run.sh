@@ -28,7 +28,7 @@ $loc/ubuntu/kernel/dependencies.sh || handle_error "Failed to run $loc/ubuntu/ke
 if [[ -d $KERNEL_DIR ]]; then
 	cd "$KERNEL_DIR"
         log "Directory $KERNEL_DIR exists"
-        $loc/ubuntu/kernel/config.sh $KERNEL_DIR base
+        $loc/ubuntu/kernel/config.sh $KERNEL_DIR _auto_base_
 else
         handle_error "Failed to change to kernel directory, Directory $KERNEL_DIR doesn't exists"
 fi
