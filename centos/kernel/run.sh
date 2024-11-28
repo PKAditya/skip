@@ -2,7 +2,7 @@
 
 loc=$1
 KERNEL_DIR=$2
-LOCAL_VERSION="-auto-base"
+LOCAL_VERSION="_auto_base"
 
 mkdir /usr/lib/automation-logs/reboot_tmp &> /dev/null
 log=/usr/lib/automation-logs/reboot_tmp/log
@@ -35,7 +35,7 @@ if [[ -d $KERNEL_DIR ]]; then
 	log "Successfully ran the configuration"
 
 	log "Proceeding with building the kernel configured with the local version"
-	$loc/centos/kernel/install.sh || handle_error "Cannot build the configured kernel."
+	$loc/centos/kernel/install.sh $LOCAL_VERSION || handle_error "Cannot build the configured kernel."
 else
         handle_error "Failed to change to kernel directory, Directory $KERNEL_DIR doesn't exists"
 fi
