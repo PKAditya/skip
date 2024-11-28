@@ -30,7 +30,7 @@ else
     
     # Add the user entry
     cp /etc/sudoers "$TEMP_SUDOERS"
-    echo "$user ALL=(ALL) ALL" >> "$TEMP_SUDOERS"
+    echo "$user ALL=\(ALL\) ALL" >> "$TEMP_SUDOERS"
     
     # Verify syntax using visudo
     if visudo -c -f "$TEMP_SUDOERS"; then
