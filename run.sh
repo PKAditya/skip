@@ -55,9 +55,9 @@ if [ "$distro" == "ubuntu" ]; then
 else
   if [ "$user" == "amd" ]; then
 	  log "Entered directory centos"
-          echo 'Amd$1234!' |  sudo -S $loc/centos/run.sh $user
+          echo 'Amd$1234!' |  sudo -S $loc/centos/run.sh $loc $KERNEL_DIR
   else
 	  log "Entered directory centos"
-          sudo $loc/centos/run.sh $user
+          sudo $loc/centos/run.sh $loc $KERNEL_DIR
   fi
 fi
