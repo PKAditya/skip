@@ -1,6 +1,6 @@
 #!/bin/bash
 
-log=/usr/lib/reboot_tmp/log
+log=/usr/lib/automation-logs/reboot_tmp/log
 log() {
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> $log
 }
@@ -32,18 +32,23 @@ log "Navigated to the kernel directory"
 log "Configuring the kernel..."
 
 # Create a configuration file to build the kernel
-make defconfig || handle_error "Failed to create config file"
+make olddefconfig || handle_error "Failed to create config file"
 
 # Change the local version to our own version
 sed -i 's/^CONFIG_LOCALVERSION=.*$/CONFIG_LOCALVERSION="'$name'"/' .config
 
 # Turn off BTF
-sed -i 's/^CONFIG_DEBUG_INFO_BTF=.*$/CONFIG_DEBUG_INFO_BTF=n/' .config
-if ! grep -q "CONFIG_DEBUG_INFO_BTF=" .config; then
-	echo "CONFIG_DEBUG_INFO_BTF=n" >> .config
-fi
+#sed -i 's/^CONFIG_DEBUG_INFO_BTF=.*$/CONFIG_DEBUG_INFO_BTF=n/' .config
+#if ! grep -q "CONFIG_DEBUG_INFO_BTF=" .config; then
+#	echo "CONFIG_DEBUG_INFO_BTF=n" >> .config
+#fi
+
+scripts/config --disable SYSTEM_TRUSTED_KEYS 
+scripts/config --disable SYSTEM_REVOCATION_KEYS 
+scripts/config --disable  CONFIG_DEBUG_INFO_BTF 
+scripts/config --disable NET_VENDOR_NETRONOME 
 
 # Regenerate the old config file so the changes made will take effect
-make olddefconfig || handle_error "Failed to update the config file"
+#make olddefconfig || handle_error "Failed to update the config file"
 
 log "Kernel configured successfully."

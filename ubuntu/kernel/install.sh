@@ -13,7 +13,7 @@ handle_error() {
 
 # Building the configured kernel
 log "Intiated kernel build"
-make -j$(nproc) || handle_error "Failed to build kernel"
+yes "" | make -j$(nproc) || handle_error "Failed to build kernel"
 log "Successfully built the kernel"
 
 
