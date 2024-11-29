@@ -1,6 +1,6 @@
 #!/bin/bash
 
-log=/usr/lib/reboot_tmp/log
+log=/usr/lib/automation-logs/reboot_tmp/log
 log() {
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> $log
 }
@@ -21,9 +21,9 @@ cd $KERNEL_DIR
 
 
 log "Cleaning the previously built kernels or the configurations"
-#make mrproper || handle_error "mrproper failed to clean the directory"
-#make distclean || handle_error "distclean failed to clean the directory"
-#make clean || handle_error "Failed to clean the directory"
+make mrproper || handle_error "mrproper failed to clean the directory"
+make distclean || handle_error "distclean failed to clean the directory"
+make clean || handle_error "Failed to clean the directory"
 log "Successfully cleaned the previous build data in the $KERNEL_DIR."
 
 
@@ -38,10 +38,15 @@ make defconfig || handle_error "Failed to create config file"
 sed -i 's/^CONFIG_LOCALVERSION=.*$/CONFIG_LOCALVERSION="'$name'"/' .config
 
 # Turn off BTF
-sed -i 's/^CONFIG_DEBUG_INFO_BTF=.*$/CONFIG_DEBUG_INFO_BTF=n/' .config
-if ! grep -q "CONFIG_DEBUG_INFO_BTF=" .config; then
-	echo "CONFIG_DEBUG_INFO_BTF=n" >> .config
-fi
+#sed -i 's/^CONFIG_DEBUG_INFO_BTF=.*$/CONFIG_DEBUG_INFO_BTF=n/' .config
+#if ! grep -q "CONFIG_DEBUG_INFO_BTF=" .config; then
+#	echo "CONFIG_DEBUG_INFO_BTF=n" >> .config
+#fi
+
+scripts/config --disable SYSTEM_TRUSTED_KEYS 
+scripts/config --disable SYSTEM_REVOCATION_KEYS 
+scripts/config --disable  CONFIG_DEBUG_INFO_BTF 
+scripts/config --disable NET_VENDOR_NETRONOME 
 
 # Regenerate the old config file so the changes made will take effect
 make olddefconfig || handle_error "Failed to update the config file"

@@ -36,7 +36,8 @@ sudo rpm -ivh "$KERNEL_PACKAGE" --force || handle_error "Failed to install the $
 log "Installed the built rpm package"
 
 log "Grepping for kernel version"
-KERNEL_VERSION=$(rpm -qp --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}\n' "$KERNEL_PACKAGE") || handle_error "Couldn't capture the installed rpm version"
+# KERNEL_VERSION=$(rpm -qp --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}\n' "$KERNEL_PACKAGE") || handle_error "Couldn't capture the installed rpm version"
+KERNEL_VERSION=$(rpm -qp --queryformat '%{VERSION}-%{RELEASE}\n' "$KERNEL_PACKAGE") || handle_error "Couldn't capture the installed rpm version"
 log "Captured the version of the kernel installed"
 
 echo "version: $KERNEL_VERSION"
