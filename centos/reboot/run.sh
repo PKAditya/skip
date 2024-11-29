@@ -28,6 +28,9 @@ PRESENT_DEFAULT_KERNEL=$(sudo grubby --default-kernel)
 echo "EXPECTED_KERNEL: $EXPECTED_KERNEL"
 echo "PRESENT_DEFAULT_KERNEL: $PRESENT_DEFAULT_KERNEL"
 if [ "$EXPECTED_KERNEL" = "$PRESENT_DEFAULT_KERNEL" ]; then
+	mkdir /usr/lib/automation-logs/rpms &> /dev/null
+	KERNEL_PACKAGE=$(cat /usr/lib/automation-logs/state-files/kernel-package)
+	cp KERNEL_PACKAGE /usr/lib/automation-logs/rpms/
 	log "Kernels matched"
 	echo "reboot" > /usr/lib/automation-logs/state-files/reboot
 	sudo reboot
