@@ -2,7 +2,7 @@
 
 LOCAL_VERSION=$1
 # log handling
-log=/usr/lib/automation_logs/reboot_tmp/log
+log=/usr/lib/automation-logs/reboot_tmp/log
 log() {
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> $log
 }
