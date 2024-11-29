@@ -4,8 +4,8 @@ loc=$1
 KERNEL_DIR=$2
 LOCAL_VERSION="_auto_base"
 
-mkdir /usr/lib/automation-logs/reboot_tmp &> /dev/null
-log=/usr/lib/automation-logs/reboot_tmp/log
+mkdir /usr/lib/automation_logs/reboot_tmp &> /dev/null
+log=/usr/lib/automation_logs/reboot_tmp/log
 rm $log &> /dev/null
 touch $log
 
