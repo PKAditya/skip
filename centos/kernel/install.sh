@@ -35,6 +35,9 @@ log "Installing the built rpm package"
 sudo rpm -ivh "$KERNEL_PACKAGE" --force || handle_error "Failed to install the $KERNEL_PACKAGE rpm"
 log "Installed the built rpm package"
 
+touch /usr/lib/automation-logs/state-files/kernel-package
+echo "$KERNEL_PACKAGE" > /usr/lib/automation-logs/state-files/kernel-package
+
 log "Grepping for kernel version"
 # KERNEL_VERSION=$(rpm -qp --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}\n' "$KERNEL_PACKAGE") || handle_error "Couldn't capture the installed rpm version"
 KERNEL_VERSION=$(rpm -qp --queryformat '%{VERSION}-%{RELEASE}\n' "$KERNEL_PACKAGE") || handle_error "Couldn't capture the installed rpm version"
@@ -44,15 +47,3 @@ echo "version: $KERNEL_VERSION"
 sudo grubby --set-default "/boot/vmlinuz-$KERNEL_VERSION" || handle_error "Failed to set default kernel"
 
 sudo grubby --default-kernel
-
-
-
-
-
-
-
-
-
-
-
-

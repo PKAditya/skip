@@ -2,7 +2,7 @@
 
 loc=$1
 KERNEL_DIR=$2
-LOCAL_VERSION="_auto_base"
+LOCAL_VERSION="_aditya"
 
 mkdir /usr/lib/automation-logs/reboot_tmp &> /dev/null
 log=/usr/lib/automation-logs/reboot_tmp/log
