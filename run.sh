@@ -36,7 +36,18 @@ echo " "
 
 # user input
 read -p "Enter kernel repository path: " KERNEL_DIR
-log "Captured user input, KERNEL_DIR: $KERNEL_DIR"
+read -p "Enter the branch name with out including the remote repository: " BRANCH
+read -p "Enter the commit sha id of the base_kernel: " BASE_COMMIT
+log "Captured the user input"
+
+# saving the input to a tmp file
+USER_INPUT=/usr/lib/automation-logs/user-input
+rm -rf $USER_INPUT &> /dev/null
+touch $USER_INPUT
+echo "KERNEL_DIR:$KERNEL_DIR" >> $USER_INPUT
+echo "BRANCH:$BRANCH" >> $USER_INPUT
+echo "BASE_COMMIT:$BASE_COMMIT" >> $USER_INPUT
+
 
 # Modifying sudoers 
 echo 'Amd$1234!' | sudo -S $loc/sudoers.sh $user || handle_error "Couldn't run sudoers modification script"
@@ -44,6 +55,10 @@ log "Modified sudoers"
 echo ""
 
 
+#create the rpm package of the patches kernel and store it to the /usr/lib/automation-logs/rpms/ for future purpose
+cd KERNEL_DIR || handle_error "Failed to navigate to $KERNEL_DIR"
+git switch BRANCH || handle_error "Couldn't switch to $BRANCH, aborting...."
+LOCAL_VERSION_PATCH="_auto_patch"
 if [ "$distro" == "ubuntu" ]; then
   if [ "$user" == "amd" ]; then
 	  log "Entered directory ubuntu"
