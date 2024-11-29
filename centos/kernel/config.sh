@@ -21,9 +21,9 @@ cd $KERNEL_DIR
 
 
 log "Cleaning the previously built kernels or the configurations"
-#make mrproper || handle_error "mrproper failed to clean the directory"
-#make distclean || handle_error "distclean failed to clean the directory"
-#make clean || handle_error "Failed to clean the directory"
+make mrproper || handle_error "mrproper failed to clean the directory"
+make distclean || handle_error "distclean failed to clean the directory"
+make clean || handle_error "Failed to clean the directory"
 log "Successfully cleaned the previous build data in the $KERNEL_DIR."
 
 
