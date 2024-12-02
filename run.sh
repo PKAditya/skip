@@ -53,26 +53,56 @@ echo "BASE_COMMIT:$BASE_COMMIT" >> $USER_INPUT
 echo 'Amd$1234!' | sudo -S $loc/sudoers.sh $user || handle_error "Couldn't run sudoers modification script"
 log "Modified sudoers"
 echo ""
-
+BASE_LOCAL_VERSION="_base_kernel_"
+PATCH_LOCAL_VERSION="_patches_kernel_"
 
 #create the rpm package of the patches kernel and store it to the /usr/lib/automation-logs/rpms/ for future purpose
-cd KERNEL_DIR || handle_error "Failed to navigate to $KERNEL_DIR"
-git switch BRANCH || handle_error "Couldn't switch to $BRANCH, aborting...."
-LOCAL_VERSION_PATCH="_auto_patch"
+cd $KERNEL_DIR || handle_error "Failed to navigate to $KERNEL_DIR"
+git switch $BRANCH || handle_error "Couldn't switch to $BRANCH, aborting...."
+
 if [ "$distro" == "ubuntu" ]; then
   if [ "$user" == "amd" ]; then
 	  log "Entered directory ubuntu"
-          echo 'Amd$1234!' | sudo -S $loc/ubuntu/run.sh $loc $KERNEL_DIR
+	  log "Creating rpm for Patcj_kernel"
+          echo 'Amd$1234!' | sudo -S $loc/ubuntu/run.sh $loc $KERNEL_DIR $PATCH_LOCAL_VERSION
+  	  log "Created rpm for Patch_kernel"
+	  log "Creating rpm for Base_kernel"
+	  cd $KERNEL_DIR || handle_error "Failed to navigate to $KERNEL_DIR"
+	  git switch $BRANCH || handle_error "Couldn't switch to $BRANCH, aborting...."
+	  git reset --hard $BASE_COMMIT || handle_error "couldn't reset head to the $BASE_COMMIT"
+	  echo 'Amd$1234!' | sudo -S $loc/ubuntu/run.sh $loc $KERNEL_DIR $BASE_LOCAL_VERSION
   else
 	  log "Entered directory ubuntu"
-          sudo $loc/ubuntu/run.sh $loc $KERNEL_DIR
+  	  log "Creating rpm for Patch_kernel"
+          sudo $loc/ubuntu/run.sh $loc $KERNEL_DIR $PATCH_LOCAL_VERSION
+	  log "Created rpm for Patch_kernel"
+          log "Creating rpm for Base_kernel"
+          cd $KERNEL_DIR || handle_error "Failed to navigate to $KERNEL_DIR"
+          git switch $BRANCH || handle_error "Couldn't switch to $BRANCH, aborting...."
+          git reset --hard $BASE_COMMIT || handle_error "couldn't reset head to the $BASE_COMMIT"
+          sudo $loc/ubuntu/run.sh $loc $KERNEL_DIR $BASE_LOCAL_VERSION
   fi
 else
   if [ "$user" == "amd" ]; then
 	  log "Entered directory centos"
-          echo 'Amd$1234!' |  sudo -S $loc/centos/run.sh $loc $KERNEL_DIR
+	  log "Creating rpm for Patch_kernel"
+          echo 'Amd$1234!' |  sudo -S $loc/centos/run.sh $loc $KERNEL_DIR $PATCH_LOCAL_VERSION
+	  log "Created rpm for Patch_kernel"
+          log "Creating rpm for Base_kernel"
+          cd $KERNEL_DIR || handle_error "Failed to navigate to $KERNEL_DIR"
+          git switch $BRANCH || handle_error "Couldn't switch to $BRANCH, aborting...."
+          git reset --hard $BASE_COMMIT || handle_error "couldn't reset head to the $BASE_COMMIT"
+          echo 'Amd$1234!' | sudo -S $loc/centos/run.sh $loc $KERNEL_DIR $BASE_LOCAL_VERSION
+	  log "Created the rpm for the base_kernel"
   else
 	  log "Entered directory centos"
-          sudo $loc/centos/run.sh $loc $KERNEL_DIR
+	  log "Creating rpm for base_kernel"
+          sudo $loc/centos/run.sh $loc $KERNEL_DIR $PATCH_LOCAL_VERSION
+	  log "Created rpm for Base_kernel"
+          log "Creating rpm for Patch_kernel"
+          cd $KERNEL_DIR || handle_error "Failed to navigate to $KERNEL_DIR"
+          git switch $BRANCH || handle_error "Couldn't switch to $BRANCH, aborting...."
+          git reset --hard $BASE_COMMIT || handle_error "couldn't reset head to the $BASE_COMMIT"
+	  sudo $loc/centos/run.sh $loc $KERNEL_DIR $BASE_LOCAL_VERSION
   fi
 fi

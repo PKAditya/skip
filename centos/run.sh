@@ -2,6 +2,7 @@
 
 loc=$1
 KERNEL_DIR=$2
+LOCAL_VERSION=$3
 
 # Creating directory to save state files
 mkdir /usr/lib/automation-logs/state-files
@@ -21,9 +22,10 @@ handle_error() {
 	exit 1
 }
 
-
+cd KERNEL_DIR || handle_error "Couldnt switch to $KERNEL_DIR"
 # running kernel build help script
-sudo $loc/centos/kernel/run.sh $loc $KERNEL_DIR || handle_error "Failed to run kernel build steps"
+sudo $loc/centos/kernel/run.sh $loc $KERNEL_DIR $LOCAL_VERSION || handle_error "Failed to run kernel build steps"
+
 
 # running the reboot process
-sudo $loc/centos/reboot/run.sh $loc $KERNEL_DIR || handle_error "Failed to process the reboot"
+# sudo $loc/centos/reboot/run.sh $loc $KERNEL_DIR || handle_error "Failed to process the reboot"

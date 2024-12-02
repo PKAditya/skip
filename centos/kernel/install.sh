@@ -27,6 +27,9 @@ log "Finding the built rpm location"
 KERNEL_PACKAGE=$(find .. -name "kernel-[0-9]*$LOCAL_VERSION*.rpm" -not -name "*devel*" -not -name "*headers*" -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ") || handle_error "Cannot find the rpm you are looking for"
 log "Found the rpm you are looking for at $KERNEL_PACKAGE"
 
+log "copying the the kernel_package to /usr/lib/automation-logs for further purposes"
+mkdir /usr/lib/automation-logs/RPMS &> /dev/null
+cp $KERNEL_PACKAGE /usr/lib/automation-logs/RPMS/
 
 
 echo "/////////kernel-name: $KERNEL_PACKAGE /////////////////"
