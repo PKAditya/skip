@@ -30,7 +30,7 @@ log "Found the rpm you are looking for at $KERNEL_PACKAGE"
 log "copying the the kernel_package to /usr/lib/automation-logs for further purposes"
 # mkdir /usr/lib/automation-logs/RPMS &> /dev/null
 
-if [ ! -d "/path/to/directory" ]; then
+if [ ! -d "/usr/lib/automation-logs/RPMS" ]; then
     mkdir -p /usr/lib/automation-logs/RPMS
 fi
 cp $KERNEL_PACKAGE /usr/lib/automation-logs/RPMS/
@@ -49,6 +49,8 @@ log "Grepping for kernel version"
 # KERNEL_VERSION=$(rpm -qp --queryformat '%{VERSION}-%{RELEASE}.%{ARCH}\n' "$KERNEL_PACKAGE") || handle_error "Couldn't capture the installed rpm version"
 KERNEL_VERSION=$(rpm -qp --queryformat '%{VERSION}-%{RELEASE}\n' "$KERNEL_PACKAGE") || handle_error "Couldn't capture the installed rpm version"
 log "Captured the version of the kernel installed"
+echo "$KERNEL_VERSION" > /usr/automation-logs/state-files/kernel-version
+
 
 echo "version: $KERNEL_VERSION"
 sudo grubby --set-default "/boot/vmlinuz-$KERNEL_VERSION" || handle_error "Failed to set default kernel"
