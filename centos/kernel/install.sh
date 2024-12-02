@@ -28,7 +28,11 @@ KERNEL_PACKAGE=$(find .. -name "kernel-[0-9]*$LOCAL_VERSION*.rpm" -not -name "*d
 log "Found the rpm you are looking for at $KERNEL_PACKAGE"
 
 log "copying the the kernel_package to /usr/lib/automation-logs for further purposes"
-mkdir /usr/lib/automation-logs/RPMS &> /dev/null
+# mkdir /usr/lib/automation-logs/RPMS &> /dev/null
+
+if [ ! -d "/path/to/directory" ]; then
+    mkdir -p /usr/lib/automation-logs/RPMS
+fi
 cp $KERNEL_PACKAGE /usr/lib/automation-logs/RPMS/
 
 
