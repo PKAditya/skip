@@ -87,7 +87,7 @@ else
 	  log "Entered directory centos"
 	  log "Creating rpm for Patch_kernel"
           echo 'Amd$1234!' |  sudo -S $loc/centos/run.sh $loc $KERNEL_DIR $PATCH_LOCAL_VERSION
-	  cp /usr/lib/automation-logs/state-files/kernel-version /usr/automation-logs/state-files/patch-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
+	  cp /usr/lib/automation-logs/state-files/kernel-version /usr/lib/automation-logs/state-files/patch-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
 	  # KERNEL_VERSION=$(cat /usr/automation-logs/state-files/kernel-version)
 #	  echo KERNEL_VERSION >
 	  log "Created rpm for Patch_kernel"
@@ -96,20 +96,20 @@ else
           git switch $BRANCH || handle_error "Couldn't switch to $BRANCH, aborting...."
           git reset --hard $BASE_COMMIT || handle_error "couldn't reset head to the $BASE_COMMIT"
           echo 'Amd$1234!' | sudo -S $loc/centos/run.sh $loc $KERNEL_DIR $BASE_LOCAL_VERSION
-	  cp /usr/lib/automation-logs/state-files/kernel-version /usr/automation-logs/state-files/base-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
+	  cp /usr/lib/automation-logs/state-files/kernel-version /usr/lib/automation-logs/state-files/base-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
 	  log "Created the rpm for the base_kernel"
   else
 	  log "Entered directory centos"
 	  log "Creating rpm for base_kernel"
           sudo $loc/centos/run.sh $loc $KERNEL_DIR $PATCH_LOCAL_VERSION
-	  cp /usr/lib/automation-logs/state-files/kernel-version /usr/automation-logs/state-files/patch-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
+	  cp /usr/lib/automation-logs/state-files/kernel-version /usr/lib/automation-logs/state-files/patch-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
 	  log "Created rpm for Base_kernel"
           log "Creating rpm for Patch_kernel"
           cd $KERNEL_DIR || handle_error "Failed to navigate to $KERNEL_DIR"
           git switch $BRANCH || handle_error "Couldn't switch to $BRANCH, aborting...."
           git reset --hard $BASE_COMMIT || handle_error "couldn't reset head to the $BASE_COMMIT"
 	  sudo $loc/centos/run.sh $loc $KERNEL_DIR $BASE_LOCAL_VERSION
-	  cp /usr/lib/automation-logs/state-files/kernel-version /usr/automation-logs/state-files/patch-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
+	  cp /usr/lib/automation-logs/state-files/kernel-version /usr/lib/automation-logs/state-files/base-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
 
   fi
 fi
