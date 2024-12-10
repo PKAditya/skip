@@ -147,8 +147,8 @@ WantedBy=multi-user.target
 EOF
 
 # Reload systemd and start the service
-sudo systemctl daemon-reload
-sudo systemctl start ${SERVICE_NAME}
-sudo systemctl enable ${SERVICE_NAME}
+#sudo systemctl daemon-reload
+#sudo systemctl start ${SERVICE_NAME}
+#sudo systemctl enable ${SERVICE_NAME}
 
 echo "Service ${SERVICE_NAME} has been created and started."
