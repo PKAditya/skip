@@ -5,7 +5,7 @@ KERNEL_DIR=$2
 LOCAL_VERSION=$3
 
 # Creating directory to save state files
-rm -rf /usr/lib/automation-logs/state-files
+# rm -rf /usr/lib/automation-logs/state-files
 mkdir /usr/lib/automation-logs/state-files
 touch /usr/lib/automation-logs/state-files/kernel_name
 
