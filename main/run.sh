@@ -8,8 +8,6 @@ if [ ! -f $STATE_FILE ]; then
 	touch $STATE_FILE
 	touch $log
 	echo "1" > $STATE_FILE
-else
-	echo "1" > $STATE_FILE
 fi
 
 BASE_LOCAL_VERSION=$(cat /usr/lib/automation-logs/state-files/base-kernel-version)
@@ -23,7 +21,7 @@ log () {
 handle_error() {
         log "Error: $1"
         echo "Script failed, Check out the logs in /usr/lib/automation-logs for finding about the error"
-        exit
+        exit 1
 }
 
 update_state() {
