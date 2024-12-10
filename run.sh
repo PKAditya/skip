@@ -64,6 +64,14 @@ echo ""
 BASE_LOCAL_VERSION="_base_kernel_$(date +%Y%m%d-%H%M%S)_"
 PATCH_LOCAL_VERSION="_patches_kernel_$(date +%Y%m%d-%H%M%S)_"
 
+
+LOC_FILE=/usr/lib/automation-logs/loc
+if [ ! -f "$LOC_FILE" ]; then
+	touch $LOC_FILE
+fi
+echo "$loc" > $LOC_FILE
+
+
 #create the rpm package of the patches kernel and store it to the /usr/lib/automation-logs/rpms/ for future purpose
 cd $KERNEL_DIR || handle_error "Failed to navigate to $KERNEL_DIR"
 git switch $BRANCH || handle_error "Couldn't switch to $BRANCH, aborting...."
