@@ -8,6 +8,8 @@ if [ ! -f $STATE_FILE ]; then
 	touch $STATE_FILE
 	touch $log
 	echo "1" > $STATE_FILE
+else
+	echo "1" > $STATE_FILE
 fi
 
 BASE_LOCAL_VERSION=$(cat /usr/lib/automation-logs/state-files/base-kernel-version)
@@ -68,6 +70,7 @@ main() {
 			fi
 			sudo rm $STATE_FILE
 			;;
+	esac
 }
 
 main
