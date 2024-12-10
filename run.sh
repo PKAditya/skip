@@ -149,30 +149,16 @@ cp $loc/main/run.sh /usr/lib/automation-logs/run.sh
 FILE_PATH="/usr/lib/automation-logs/run.sh"
 
 # Set the name of the service
-SERVICE_NAME="lkp-auto"
-if [ ! -f "$SERVICE_NAME.service" ]; then
-	touch "${SERVICE_NAME}.service"
-else
-	rm  -rf "${SERVICE_NAME}.service"
-	touch "${SERVICE_NAME}.service"
-# Create the service file
-cat << EOF | sudo tee /etc/systemd/system/${SERVICE_NAME}.service
-[Unit]
-Description=My Service
-After=network.target
-
-[Service]
-ExecStart=${FILE_PATH}
-Restart=always
-User=amd
-
-[Install]
-WantedBy=multi-user.target
-EOF
+SERVICE_NAME="reboot.service"
+#if [ ! -f "$SERVICE_NAME.service" ]; then
+#	touch "${SERVICE_NAME}.service"
+#else
+#	rm  -rf "${SERVICE_NAME}.service"
+#	touch "${SERVICE_NAME}.service"
 
 # Reload systemd and start the service
-#sudo systemctl daemon-reload
-#sudo systemctl start ${SERVICE_NAME}
-#sudo systemctl enable ${SERVICE_NAME}
+sudo systemctl daemon-reload
+sudo systemctl enable ${SERVICE_NAME}
+sudo systemctl start ${SERVICE_NAME}
 
 echo "Service ${SERVICE_NAME} has been created and started."
