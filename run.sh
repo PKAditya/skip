@@ -103,6 +103,7 @@ else
 	  log "Entered directory centos"
 	  log "Creating rpm for Patch_kernel"
           echo 'Amd$1234!' |  sudo -S $loc/centos/run.sh $loc $KERNEL_DIR $PATCH_LOCAL_VERSION
+	  touch /usr/lib/automation-logs/state-files/usr/lib/automation-logs/state-files/patch-kernel-version
 	  cp /usr/lib/automation-logs/state-files/kernel-version /usr/lib/automation-logs/state-files/patch-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
 	  # KERNEL_VERSION=$(cat /usr/automation-logs/state-files/kernel-version)
 #	  echo KERNEL_VERSION >
@@ -112,6 +113,7 @@ else
           git switch $BRANCH || handle_error "Couldn't switch to $BRANCH, aborting...."
           git reset --hard $BASE_COMMIT || handle_error "couldn't reset head to the $BASE_COMMIT"
           echo 'Amd$1234!' | sudo -S $loc/centos/run.sh $loc $KERNEL_DIR $BASE_LOCAL_VERSION
+	  touch /usr/lib/automation-logs/state-files/base-kernel-version
 	  cp /usr/lib/automation-logs/state-files/kernel-version /usr/lib/automation-logs/state-files/base-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
 	  log "Created the rpm for the base_kernel"
           rm /usr/lib/automation-logs/state-files/main-state &> /dev/null
@@ -120,6 +122,7 @@ else
 	  log "Entered directory centos"
 	  log "Creating rpm for base_kernel"
           sudo $loc/centos/run.sh $loc $KERNEL_DIR $PATCH_LOCAL_VERSION
+	  touch /usr/lib/automation-logs/state-files/patch-kernel-version
 	  cp /usr/lib/automation-logs/state-files/kernel-version /usr/lib/automation-logs/state-files/patch-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
 	  log "Created rpm for Base_kernel"
           log "Creating rpm for Patch_kernel"
@@ -127,6 +130,7 @@ else
           git switch $BRANCH || handle_error "Couldn't switch to $BRANCH, aborting...."
           git reset --hard $BASE_COMMIT || handle_error "couldn't reset head to the $BASE_COMMIT"
 	  sudo $loc/centos/run.sh $loc $KERNEL_DIR $BASE_LOCAL_VERSION
+	  touch /usr/lib/automation-logs/state-files/base-kernel-version
 	  cp /usr/lib/automation-logs/state-files/kernel-version /usr/lib/automation-logs/state-files/base-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
           rm /usr/lib/automation-logs/state-files/main-state &> /dev/null
           touch /usr/lib/automation-logs/state-files/main-state
@@ -146,7 +150,11 @@ FILE_PATH="/usr/lib/automation-logs/run.sh"
 
 # Set the name of the service
 SERVICE_NAME="lkp-auto"
-
+if [ ! -f "$SERVICE_NAME.service" ]; then
+	touch "${SERVICE_NAME}.service"
+else
+	rm  -rf "${SERVICE_NAME}.service"
+	touch "${SERVICE_NAME}.service"
 # Create the service file
 cat << EOF | sudo tee /etc/systemd/system/${SERVICE_NAME}.service
 [Unit]
