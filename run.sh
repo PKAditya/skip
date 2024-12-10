@@ -61,8 +61,8 @@ echo "BASE_COMMIT:$BASE_COMMIT" >> $USER_INPUT
 echo 'Amd$1234!' | sudo -S $loc/sudoers.sh $user || handle_error "Couldn't run sudoers modification script"
 log "Modified sudoers"
 echo ""
-BASE_LOCAL_VERSION="_base_kernel_$(date +%Y%m%d-%H%M%S)_"
-PATCH_LOCAL_VERSION="_patches_kernel_$(date +%Y%m%d-%H%M%S)_"
+BASE_LOCAL_VERSION="_base_kernel_$(date +%Y%m%d_%H%M%S)_"
+PATCH_LOCAL_VERSION="_patches_kernel_$(date +%Y%m%d_%H%M%S)_"
 
 
 LOC_FILE=/usr/lib/automation-logs/loc
