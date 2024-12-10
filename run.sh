@@ -28,6 +28,12 @@ loc=$(pwd)
 distro=$(cat /etc/os-release | grep ^ID= | cut -d'=' -f2)
 user=$(echo $USER)
 
+
+if [ ! -d "/usr/lib/automation-logs/PACKAGES" ]; then
+    mkdir -p /usr/lib/automation-logs/PACKAGES
+fi
+
+
 echo "////////////--  STARTING WITH LKP RUNNING  --\\\\\\\\\\\\"
 echo "Distro found: $distro"
 echo "Current user: $user"

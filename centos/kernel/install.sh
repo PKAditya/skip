@@ -30,10 +30,7 @@ log "Found the rpm you are looking for at $KERNEL_PACKAGE"
 log "copying the the kernel_package to /usr/lib/automation-logs for further purposes"
 # mkdir /usr/lib/automation-logs/RPMS &> /dev/null
 
-if [ ! -d "/usr/lib/automation-logs/RPMS" ]; then
-    mkdir -p /usr/lib/automation-logs/RPMS
-fi
-cp $KERNEL_PACKAGE /usr/lib/automation-logs/RPMS/
+cp $KERNEL_PACKAGE /usr/lib/automation-logs/PACKAGES/
 
 
 echo "/////////kernel-name: $KERNEL_PACKAGE /////////////////"
