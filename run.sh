@@ -31,6 +31,8 @@ user=$(echo $USER)
 
 if [ ! -d "/usr/lib/automation-logs/PACKAGES" ]; then
     mkdir -p /usr/lib/automation-logs/PACKAGES
+else
+    sudo rm -rf /usr/lib/automation-logs/PACKAGES/*
 fi
 
 
