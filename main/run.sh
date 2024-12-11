@@ -1,8 +1,5 @@
 #!/bin/bash
 
-echo "ABCDEFGHIJKLMNOPUCK"
-echo "ABCDEFGHIJKLMNOPUCK" >> /tmp/claude
-
 loc=$(cat /usr/lib/automation-logs/loc)
 echo "$loc"
 log="/var/log/reboot"
@@ -53,7 +50,6 @@ case $current_state in
 		;;
 	"2")
 		tmp=$(uname -r)
-		touch /home/amd/aditya/work
 		if [[ "$BASE_LOCAL_VERSION" == "$tmp" ]]; then
 			echo "Kernel expected and current matched"
 		else
@@ -68,9 +64,10 @@ case $current_state in
 		;;
 	"3")
 		tmp2=$(uname -r)
-		touch /home/amd/aditya/work
 		if [[ "$PATCH_LOCAL_VERSION" == "$tmp2" ]]; then
-			echo "Patches kernel applied" > /home/amd/aditya/work
+			echo "Patches kernel applied"
+			rm $STATE_FILE
+			log "SUCCESSFULLY Completed the booting."
 		else
 			echo "couldn't install patches kernel"
 			handle_error "Couldn't install patches kernel"
