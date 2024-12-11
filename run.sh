@@ -149,13 +149,16 @@ cp $loc/main/run.sh /usr/lib/automation-logs/run.sh
 FILE_PATH="/usr/lib/automation-logs/run.sh"
 
 # Set the name of the service
-SERVICE_NAME="reboot.service"
+SERVICE_NAME="lkp.service"
 #if [ ! -f "$SERVICE_NAME.service" ]; then
 #	touch "${SERVICE_NAME}.service"
 #else
 #	rm  -rf "${SERVICE_NAME}.service"
 #	touch "${SERVICE_NAME}.service"
+sudo cp $loc/main/lkp.service /etc/systemd/system/lkp.service
 
+sudo chmod 777 /usr/lib/automation-logs/run.sh
+sudo chmod 777 /etc/systemd/system/lkp.service
 # Reload systemd and start the service
 sudo systemctl daemon-reload
 sudo systemctl enable ${SERVICE_NAME}
