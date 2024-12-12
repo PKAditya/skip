@@ -1,0 +1,11 @@
+[Unit]
+Description=My Service
+After=network.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash /usr/local/bin/run.sh
+
+[Install]
+WantedBy=multi-user.target

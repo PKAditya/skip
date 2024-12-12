@@ -117,8 +117,6 @@ else
 	  touch /var/lib/lkp-automation-data/state-files/base-kernel-version
 	  cp /var/lib/lkp-automation-data/state-files/kernel-version /var/lib/lkp-automation-data/state-files/base-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
 	  log "Successfully built the base kernel"
-          rm /var/lib/lkp-automation-data/state-files/main-state &> /dev/null
-          touch /var/lib/lkp-automation-data/state-files/main-state
   else
 	  log "Intializing the steps to build the kernel with patches"
           sudo $loc/centos/run.sh $loc $KERNEL_DIR $PATCH_LOCAL_VERSION
@@ -133,8 +131,6 @@ else
 	  touch /var/lib/lkp-automation-data/state-files/base-kernel-version
           cp /var/lib/lkp-automation-data/state-files/kernel-version /var/lib/lkp-automation-data/state-files/base-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
 	  log "Successfully built the base kernel"
-          rm /var/lib/lkp-automation-data/state-files/main-state &> /dev/null
-          touch /var/lib/lkp-automation-data/state-files/main-state
 
 
   fi
@@ -144,16 +140,16 @@ fi
 
 # creating the service file, for running the lkp on both the kernels.
 
-rm /usr/lib/automation-logs/run.sh
-touch /usr/lib/automation-logs/run.sh
-cp $loc/main/run.sh /usr/lib/automation-logs/run.sh
-FILE_PATH="/usr/lib/automation-logs/run.sh"
+rm /var/lib/lkp-automation-data/run.sh
+touch /var/lib/lkp-automation-data/run.sh
+cp $loc/main/run.sh /var/lib/lkp-automation-data/run.sh
+FILE_PATH="/var/lib/lkp-automation-data/run.sh"
 
 # Set the name of the service
 SERVICE_NAME="lkp.service"
 sudo cp $loc/main/lkp.service /etc/systemd/system/lkp.service
 
-sudo chmod 777 /usr/lib/automation-logs/run.sh
+sudo chmod 777 /var/lib/lkp-automation-data/run.sh
 sudo chmod 777 /etc/systemd/system/lkp.service
 # Reload systemd and start the service
 sudo systemctl daemon-reload
