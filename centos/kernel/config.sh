@@ -37,7 +37,7 @@ make olddefconfig || handle_error "Failed to create config file"
 
 # Change the local version to our own version
 sed -i 's/^CONFIG_LOCALVERSION=.*$/CONFIG_LOCALVERSION="'$name'"/' .config
-log "Changed the configured kernel local version to $name
+log "Changed the configured kernel local version to $name"
 
 log "Disabling unecessary certificates in the configured kernel"
 scripts/config --disable SYSTEM_TRUSTED_KEYS 

@@ -2,7 +2,7 @@
 
 loc=$(cat /var/lib/lkp-automation-data/loc)
 echo "$loc"
-log"/var/log/lkp-automation-data/reboot-log"
+log="/var/log/lkp-automation-data/reboot-log"
 
 STATE_FILE="/var/lib/lkp-automation-data/state-files/main-state"
 if [ ! -f $STATE_FILE ]; then
