@@ -23,6 +23,8 @@ handle_error() {
 
 # capture current working directory
 loc=$(pwd)
+touch /var/lib/lkp-automation-data/loc
+echo $loc > /var/lib/lkp-automation-data/loc
 log "Captured current working directory: $loc"
 # capture type of distro.
 distro=$(cat /etc/os-release | grep ^ID= | cut -d'=' -f2)
@@ -102,34 +104,37 @@ if [ "$distro" == "ubuntu" ]; then
   fi
 else
   if [ "$user" == "amd" ]; then
+	  log "Intializing the steps to build the kernel with patches"
           echo 'Amd$1234!' |  sudo -S $loc/centos/run.sh $loc $KERNEL_DIR $PATCH_LOCAL_VERSION
 	  touch /var/lib/lkp-automation-data/state-files/patch-kernel-version
 	  cp /var/lib/lkp-automation-data/state-files/kernel-version /var/lib/lkp-automation-data/state-files/patch-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
+	  log "Successfully built the kernel patches."
+	  log "Intializing the steps to build the base kernel"
           cd $KERNEL_DIR || handle_error "Failed to navigate to $KERNEL_DIR"
           git switch $BRANCH || handle_error "Couldn't switch to $BRANCH, aborting...."
           git reset --hard $BASE_COMMIT || handle_error "couldn't reset head to the $BASE_COMMIT"
           echo 'Amd$1234!' | sudo -S $loc/centos/run.sh $loc $KERNEL_DIR $BASE_LOCAL_VERSION
 	  touch /var/lib/lkp-automation-data/state-files/base-kernel-version
 	  cp /var/lib/lkp-automation-data/state-files/kernel-version /var/lib/lkp-automation-data/state-files/base-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
-	  log "Created the rpm for the base_kernel"
+	  log "Successfully built the base kernel"
           rm /var/lib/lkp-automation-data/state-files/main-state &> /dev/null
           touch /var/lib/lkp-automation-data/state-files/main-state
   else
-	  log "Entered directory centos"
-	  log "Creating rpm for base_kernel"
+	  log "Intializing the steps to build the kernel with patches"
           sudo $loc/centos/run.sh $loc $KERNEL_DIR $PATCH_LOCAL_VERSION
-	  touch /usr/lib/automation-logs/state-files/patch-kernel-version
-	  cp /usr/lib/automation-logs/state-files/kernel-version /usr/lib/automation-logs/state-files/patch-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
-	  log "Created rpm for Base_kernel"
-          log "Creating rpm for Patch_kernel"
+	  touch /var/lib/lkp-automation-data/state-files/patch-kernel-version
+	  cp /var/lib/lkp-automation-data/state-files/kernel-version /var/lib/lkp-automation-data/state-files/patch-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
+	  log "Successfully built the kernel patches."
+	  log "Intializing the steps to build the base kernel"
           cd $KERNEL_DIR || handle_error "Failed to navigate to $KERNEL_DIR"
           git switch $BRANCH || handle_error "Couldn't switch to $BRANCH, aborting...."
           git reset --hard $BASE_COMMIT || handle_error "couldn't reset head to the $BASE_COMMIT"
 	  sudo $loc/centos/run.sh $loc $KERNEL_DIR $BASE_LOCAL_VERSION
-	  touch /usr/lib/automation-logs/state-files/base-kernel-version
-	  cp /usr/lib/automation-logs/state-files/kernel-version /usr/lib/automation-logs/state-files/base-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
-          rm /usr/lib/automation-logs/state-files/main-state &> /dev/null
-          touch /usr/lib/automation-logs/state-files/main-state
+	  touch /var/lib/lkp-automation-data/state-files/base-kernel-version
+          cp /var/lib/lkp-automation-data/state-files/kernel-version /var/lib/lkp-automation-data/state-files/base-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
+	  log "Successfully built the base kernel"
+          rm /var/lib/lkp-automation-data/state-files/main-state &> /dev/null
+          touch /var/lib/lkp-automation-data/state-files/main-state
 
 
   fi
@@ -146,11 +151,6 @@ FILE_PATH="/usr/lib/automation-logs/run.sh"
 
 # Set the name of the service
 SERVICE_NAME="lkp.service"
-#if [ ! -f "$SERVICE_NAME.service" ]; then
-#	touch "${SERVICE_NAME}.service"
-#else
-#	rm  -rf "${SERVICE_NAME}.service"
-#	touch "${SERVICE_NAME}.service"
 sudo cp $loc/main/lkp.service /etc/systemd/system/lkp.service
 
 sudo chmod 777 /usr/lib/automation-logs/run.sh

@@ -1,10 +1,10 @@
 #!/bin/bash
 
-loc=$(cat /usr/lib/automation-logs/loc)
+loc=$(cat /var/lib/lkp-automation-data/loc)
 echo "$loc"
-log="/var/log/reboot"
+log"/var/log/lkp-automation-data/reboot-log"
 
-STATE_FILE="/var/lib/reboot"
+STATE_FILE="/var/lib/lkp-automation-data/state-files/main-state"
 if [ ! -f $STATE_FILE ]; then
         touch $STATE_FILE
         touch $log
@@ -13,9 +13,9 @@ if [ ! -f $STATE_FILE ]; then
         echo "1" > $STATE_FILE 
 fi
 
-BASE_LOCAL_VERSION=$(cat /usr/lib/automation-logs/state-files/base-kernel-version)
-PATCH_LOCAL_VERSION=$(cat /usr/lib/automation-logs/state-files/patch-kernel-version)
-CURRENT_STATE=$(cat /usr/lib/automation-logs/state-files/main-state)
+BASE_LOCAL_VERSION=$(cat /var/lib/lkp-automation-data/state-files/base-kernel-version)
+PATCH_LOCAL_VERSION=$(cat /var/lib/lkp-automation-data/state-files/patch-kernel-version)
+CURRENT_STATE=$(cat /var/lib/lkp-automation-data/state-files/main-state)
 
 log () {
     echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> $log
