@@ -66,7 +66,7 @@ case $current_state in
 		tmp2=$(uname -r)
 		if [[ "$PATCH_LOCAL_VERSION" == "$tmp2" ]]; then
 			echo "Patches kernel applied"
-			rm $STATE_FILE
+			#rm $STATE_FILE
 			log "SUCCESSFULLY Completed the booting."
 		else
 			echo "couldn't install patches kernel"
