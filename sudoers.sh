@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Helpers for logs
-log=/usr/lib/automation-logs/log
+log=/var/log/lkp-automation-data/pre-reboot-log
 log () {
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> $log
 }
@@ -12,9 +12,11 @@ handle_error() {
         exit
 }
 
+log "Entered the sudoers.sh script"
 # giving the current user root priviledges
 user=$1
-
+log "Got $user as input from run.sh"
+log "Giving the user the root privledges"
 sudoers_pattern="^$user[[:space:]]\+ALL=(ALL)[[:space:]]\+ALL"
 
 if grep -q "$sudoers_pattern" /etc/sudoers; then
@@ -30,15 +32,18 @@ else
     
     # Add the user entry
     cp /etc/sudoers "$TEMP_SUDOERS"
+    log "Copied the original sudoers to a backup file."
     echo "$user ALL=(ALL) ALL" >> "$TEMP_SUDOERS"
     
     # Verify syntax using visudo
     if visudo -c -f "$TEMP_SUDOERS"; then
         cp "$TEMP_SUDOERS" /etc/sudoers
         echo "Successfully added user to sudoers"
+	log "Added $user to the sudoers file successfully"
     else
-        echo "Error: Syntax check failed. Changes not applied."
+        echo "Error: Syntax check faileid. Changes not applied."
 	handle_error "Syntax check failed. Changes not applied for user privledges"
+	handle_error "Original sudoers file unchanged."
         echo "Original sudoers file is unchanged"
     fi
     
@@ -61,10 +66,6 @@ fi
 # Use visudo to check syntax before making changes
 TEMP_SUDOERS=$(mktemp)
 
-
-
-
-
 awk '
 /^Defaults.*secure_path/ {
     if ($0 !~ /\/usr\/local\/bin/) {
@@ -84,6 +85,7 @@ if visudo -c -f "$TEMP_SUDOERS"; then
     # If syntax check passes, copy the temp file to sudoers
     cp "$TEMP_SUDOERS" /etc/sudoers
     echo "Successfully added /usr/local/bin to secure_path"
+    log "Added the secure path /usr/local/bin to the sudoers file"
 else
     echo "Error: Syntax check failed. Changes not applied."
     handle_error "Syntax check failed. Addition of secure_path to defaults not done"
@@ -95,3 +97,4 @@ fi
 # Clean up
 rm -f "$TEMP_SUDOERS"
 log "Successfully added path to secure_path in defaults"
+log "Going out of Sudoers.sh script"

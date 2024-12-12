@@ -1,6 +1,6 @@
 #!/bin/bash
 
-log=/usr/lib/automation-logs/reboot_tmp/log
+log=/var/log/lkp-automation-data/pre-reboot-log
 log() {
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" >> $log
 }
@@ -9,16 +9,17 @@ handle_error() {
     echo "SETUP Failed, refer $log for the details"
     exit 1
 }
-
+log "Entered centos/kernel/config.sh script"
 
 echo "DIR:$1"
 echo "name:$2"
 KERNEL_DIR=$1
 name=$2
+log "Recieved input from previous run, KERNEL_DIR: $1 and name: $2"
 
 
 cd $KERNEL_DIR
-
+log "Current working directory: $KERNEL_DIR"
 
 log "Cleaning the previously built kernels or the configurations"
 make mrproper || handle_error "mrproper failed to clean the directory"
@@ -36,19 +37,13 @@ make olddefconfig || handle_error "Failed to create config file"
 
 # Change the local version to our own version
 sed -i 's/^CONFIG_LOCALVERSION=.*$/CONFIG_LOCALVERSION="'$name'"/' .config
+log "Changed the configured kernel local version to $name
 
-# Turn off BTF
-#sed -i 's/^CONFIG_DEBUG_INFO_BTF=.*$/CONFIG_DEBUG_INFO_BTF=n/' .config
-#if ! grep -q "CONFIG_DEBUG_INFO_BTF=" .config; then
-#	echo "CONFIG_DEBUG_INFO_BTF=n" >> .config
-#fi
-
+log "Disabling unecessary certificates in the configured kernel"
 scripts/config --disable SYSTEM_TRUSTED_KEYS 
 scripts/config --disable SYSTEM_REVOCATION_KEYS 
 scripts/config --disable  CONFIG_DEBUG_INFO_BTF 
 scripts/config --disable NET_VENDOR_NETRONOME 
 
-# Regenerate the old config file so the changes made will take effect
-#make olddefconfig || handle_error "Failed to update the config file"
-
 log "Kernel configured successfully."
+log "Going out of centos/kernel/config.sh script"

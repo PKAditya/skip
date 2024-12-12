@@ -5,9 +5,9 @@ pip install pyfiglet &> /dev/null
 python3 -m pyfiglet "LKP TESTS"
 
 # Helpers for logs
-mkdir /usr/lib/automation-logs &> /dev/null
-log=/usr/lib/automation-logs/log
-rm -rf $log &> /dev/null
+mkdir /var/log/lkp-automation-data &> /dev/null
+mkdir /var/lib/lkp-automation-data &> /dev/null
+log=/var/log/lkp-automation-data/pre-reboot-log
 touch $log
 
 log () {
@@ -16,23 +16,26 @@ log () {
 
 handle_error() {
         log "Error: $1"
-        echo "Script failed, Check out the logs in /usr/lib/automation-logs for finding about the error"
+        echo "Script failed, Check out the logs in /var/log/lkp-automation-data/pre-reboot-log for finding about the error"
         exit
 }
 
 
 # capture current working directory
 loc=$(pwd)
-
+log "Captured current working directory: $loc"
 # capture type of distro.
 distro=$(cat /etc/os-release | grep ^ID= | cut -d'=' -f2)
 user=$(echo $USER)
+log "Captured current distro: $distro, current user: $user"
 
-
-if [ ! -d "/usr/lib/automation-logs/PACKAGES" ]; then
-    mkdir -p /usr/lib/automation-logs/PACKAGES
+log "Creating a directory for storing the built packages"
+if [ ! -d "/var/lib/lkp-automation-data/PACKAGES" ]; then
+    sudo mkdir -p /var/lib/lkp-automation-data/PACKAGES
+    log "Created a new directory /var/lib/lkp-automation-data/PACKAGES"
 else
-    sudo rm -rf /usr/lib/automation-logs/PACKAGES/*
+    log "Directory /var/lib/lkp-automation-data/PACKAGES already exists, deleting the files inside the directory"
+    sudo rm -rf /var/lib/lkp-automation-data/PACKAGES/*
 fi
 
 
@@ -49,21 +52,20 @@ read -p "Enter the commit sha id of the base_kernel: " BASE_COMMIT
 log "Captured the user input"
 
 # saving the input to a tmp file
-USER_INPUT=/usr/lib/automation-logs/user-input
+USER_INPUT=/var/lib/lkp-automation-data/user-input
 rm -rf $USER_INPUT &> /dev/null
 touch $USER_INPUT
 echo "KERNEL_DIR:$KERNEL_DIR" >> $USER_INPUT
 echo "BRANCH:$BRANCH" >> $USER_INPUT
 echo "BASE_COMMIT:$BASE_COMMIT" >> $USER_INPUT
-
+log "Find the user given input in $USER_INPUT"
 
 # Modifying sudoers 
 echo 'Amd$1234!' | sudo -S $loc/sudoers.sh $user || handle_error "Couldn't run sudoers modification script"
-log "Modified sudoers"
 echo ""
 BASE_LOCAL_VERSION="_base_kernel_$(date +%Y%m%d_%H%M%S)_"
 PATCH_LOCAL_VERSION="_patches_kernel_$(date +%Y%m%d_%H%M%S)_"
-
+log "Defined local varibles, BASE_LOCAL_VERSION=$BASE_LOCAL_VERSION and PATCH_LOCAL_VERSION=$PATCH_LOCAL_VERSION"
 
 LOC_FILE=/usr/lib/automation-logs/loc
 if [ ! -f "$LOC_FILE" ]; then
@@ -74,12 +76,12 @@ echo "$loc" > $LOC_FILE
 
 #create the rpm package of the patches kernel and store it to the /usr/lib/automation-logs/rpms/ for future purpose
 cd $KERNEL_DIR || handle_error "Failed to navigate to $KERNEL_DIR"
+log "Navigated to $KERNEL_DIR"
 git switch $BRANCH || handle_error "Couldn't switch to $BRANCH, aborting...."
 
 if [ "$distro" == "ubuntu" ]; then
   if [ "$user" == "amd" ]; then
 	  log "Entered directory ubuntu"
-	  log "Creating rpm for Patcj_kernel"
           echo 'Amd$1234!' | sudo -S $loc/ubuntu/run.sh $loc $KERNEL_DIR $PATCH_LOCAL_VERSION
   	  log "Created rpm for Patch_kernel"
 	  log "Creating rpm for Base_kernel"
@@ -100,24 +102,18 @@ if [ "$distro" == "ubuntu" ]; then
   fi
 else
   if [ "$user" == "amd" ]; then
-	  log "Entered directory centos"
-	  log "Creating rpm for Patch_kernel"
           echo 'Amd$1234!' |  sudo -S $loc/centos/run.sh $loc $KERNEL_DIR $PATCH_LOCAL_VERSION
-	  touch /usr/lib/automation-logs/state-files/usr/lib/automation-logs/state-files/patch-kernel-version
-	  cp /usr/lib/automation-logs/state-files/kernel-version /usr/lib/automation-logs/state-files/patch-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
-	  # KERNEL_VERSION=$(cat /usr/automation-logs/state-files/kernel-version)
-#	  echo KERNEL_VERSION >
-	  log "Created rpm for Patch_kernel"
-          log "Creating rpm for Base_kernel"
+	  touch /var/lib/lkp-automation-data/state-files/patch-kernel-version
+	  cp /var/lib/lkp-automation-data/state-files/kernel-version /var/lib/lkp-automation-data/state-files/patch-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
           cd $KERNEL_DIR || handle_error "Failed to navigate to $KERNEL_DIR"
           git switch $BRANCH || handle_error "Couldn't switch to $BRANCH, aborting...."
           git reset --hard $BASE_COMMIT || handle_error "couldn't reset head to the $BASE_COMMIT"
           echo 'Amd$1234!' | sudo -S $loc/centos/run.sh $loc $KERNEL_DIR $BASE_LOCAL_VERSION
-	  touch /usr/lib/automation-logs/state-files/base-kernel-version
-	  cp /usr/lib/automation-logs/state-files/kernel-version /usr/lib/automation-logs/state-files/base-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
+	  touch /var/lib/lkp-automation-data/state-files/base-kernel-version
+	  cp /var/lib/lkp-automation-data/state-files/kernel-version /var/lib/lkp-automation-data/state-files/base-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
 	  log "Created the rpm for the base_kernel"
-          rm /usr/lib/automation-logs/state-files/main-state &> /dev/null
-          touch /usr/lib/automation-logs/state-files/main-state
+          rm /var/lib/lkp-automation-data/state-files/main-state &> /dev/null
+          touch /var/lib/lkp-automation-data/state-files/main-state
   else
 	  log "Entered directory centos"
 	  log "Creating rpm for base_kernel"

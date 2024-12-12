@@ -46,7 +46,7 @@ case $current_state in
 		grub2-mkconfig -o /boot/grub2/grub.cfg
 		update_state "2"
 		log "System about to reboot with base_patches"			
-		#reboot
+		reboot
 		;;
 	"2")
 		tmp=$(uname -r)
@@ -60,7 +60,7 @@ case $current_state in
 		grub2-mkconfig -o /boot/grub2/grub.cfg
 		chmod 755 $name2
 		update_state "3"
-		#reboot
+		reboot
 		;;
 	"3")
 		tmp2=$(uname -r)
