@@ -1,11 +1,11 @@
 [Unit]
-Description=Automation Logs Script
+Description=My Service
 After=network.target
 
 [Service]
-Type=simple
-ExecStart=/var/lib/lkp-automation-data/run.sh
-Restart=on-failure
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash /var/lib/lkp-automation-data/run.sh
 
 [Install]
 WantedBy=multi-user.target

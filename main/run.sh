@@ -45,27 +45,29 @@ case $current_state in
 		chmod 755 $name
 		grub2-mkconfig -o /boot/grub2/grub.cfg
 		update_state "2"
-		log "System about to reboot with base_patches"			
+		log "System about to reboot with base_patches"
+		echo "Applied base kernel, BASE_KERNEL:$BASE_LOCAL_VERSION"			
 		reboot
 		;;
 	"2")
 		tmp=$(uname -r)
 		if [[ "$BASE_LOCAL_VERSION" == "$tmp" ]]; then
-			echo "Kernel expected and current matched"
+			echo "Base kernel is installed on the system, starting the lkp"
 		else
-			handle_error "Base Kernel is not installed ono the system"
+			handle_error "Base Kernel is not installed on the system"
 		fi
 		name2=/boot/vmlinuz-$PATCH_LOCAL_VERSION
 		grubby --set-default=$name2
 		grub2-mkconfig -o /boot/grub2/grub.cfg
 		chmod 755 $name2
 		update_state "3"
+		echo "Applied kernel with patches, PATCHES_KERNEL:$PATCH_LOCAL_VERSION"
 		reboot
 		;;
 	"3")
 		tmp2=$(uname -r)
 		if [[ "$PATCH_LOCAL_VERSION" == "$tmp2" ]]; then
-			echo "Patches kernel applied"
+			echo "Kernel with patches is installed on the system, starting the lkp"
 			#rm $STATE_FILE
 			log "SUCCESSFULLY Completed the booting."
 		else
