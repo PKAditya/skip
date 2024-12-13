@@ -70,6 +70,10 @@ case $current_state in
 			echo "Kernel with patches is installed on the system, starting the lkp"
 			#rm $STATE_FILE
 			log "SUCCESSFULLY Completed the booting."
+			rm $STATE_FILE
+			systemctl daemon-reload
+			systemctl stop lkp.service
+			systemctl disable lkp.service
 		else
 			echo "couldn't install patches kernel"
 			handle_error "Couldn't install patches kernel"
