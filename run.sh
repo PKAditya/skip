@@ -160,6 +160,8 @@ touch /var/lib/lkp-automation-data/run.sh
 cp $loc/main/run.sh /var/lib/lkp-automation-data/run.sh
 FILE_PATH="/var/lib/lkp-automation-data/run.sh"
 
+sudo touch /var/lib/lkp-automation-data/state-files/main-state
+sudo echo "1" > /var/lib/lkp-automation-data/state-files/main-state
 # Set the name of the service
 SERVICE_NAME="lkp.service"
 sudo cp $loc/main/lkp.service /etc/systemd/system/lkp.service

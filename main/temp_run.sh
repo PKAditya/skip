@@ -6,7 +6,7 @@ log="/var/log/lkp-automation-data/reboot-log"
 
 STATE_FILE="/var/lib/lkp-automation-data/state-files/main-state"
 if [ ! -f $STATE_FILE ]; then
-#        touch $STATE_FILE
+        touch $STATE_FILE
         touch $log
 	chmod 666 $STATE_FILE
 	chmod 666 $log
@@ -57,34 +57,27 @@ case $current_state in
 		else
 			handle_error "Base Kernel is not installed on the system"
 		fi
+		name2=/boot/vmlinuz-$PATCH_LOCAL_VERSION
+		grubby --set-default=$name2
+		grub2-mkconfig -o /boot/grub2/grub.cfg
+		chmod 755 $name2
+		update_state "3"
+		echo "Applied kernel with patches, PATCHES_KERNEL:$PATCH_LOCAL_VERSION"
+		reboot
 		;;
 	"3")
-		name2=/boot/vmlinuz-$PATCH_LOCAL_VERSION
-                grubby --set-default=$name2
-                grub2-mkconfig -o /boot/grub2/grub.cfg
-                chmod 755 $name2
-                update_state "4"
-                echo "Applied kernel with patches, PATCHES_KERNEL:$PATCH_LOCAL_VERSION"
-                reboot
-		;;
-
-	"4")
 		tmp2=$(uname -r)
 		if [[ "$PATCH_LOCAL_VERSION" == "$tmp2" ]]; then
-			systemctl start lkprun.service
 			echo "Kernel with patches is installed on the system, starting the lkp"
-			systemctl start lkprun.service
 			#rm $STATE_FILE
 			log "SUCCESSFULLY Completed the booting."
 			rm $STATE_FILE
+			systemctl daemon-reload
+			systemctl stop lkp.service
+			systemctl disable lkp.service
 		else
 			echo "couldn't install patches kernel"
 			handle_error "Couldn't install patches kernel"
 		fi
-		;;
-	"5")
-		rm $STATE_FILE	
-		systemctl daemon-reload
-		systemctl stop lkp.service	
 		;;
 esac
