@@ -53,6 +53,7 @@ case $current_state in
 		tmp=$(uname -r)
 		if [[ "$BASE_LOCAL_VERSION" == "$tmp" ]]; then
 			echo "Base kernel is installed on the system, starting the lkp"
+			systemctl start lkprun.service
 		else
 			handle_error "Base Kernel is not installed on the system"
 		fi

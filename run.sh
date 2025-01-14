@@ -140,6 +140,21 @@ fi
 
 # creating the service file, for running the lkp on both the kernels.
 
+cd $loc/..
+git clone https://github.com/PKumarAditya/LKP_Automated.git
+cd $loc/LKP_Automated
+make
+wlkp=$(which lkp)
+rlkp="/usr/local/bin/lkp"
+whack=$(which hackbench)
+rhack="/usr/local/bin/hackbench"
+sudo systemctl stop lkprun.service
+if [[ ! -x "$rlkp" || ! -x "$rhack" ]]; then
+	echo "Either the lkp or hackbench didnot install properly"
+	handle_error "Couldn't install lkp or hackbench, install them manually and run the lkp.service file"
+fi
+
+
 rm /var/lib/lkp-automation-data/run.sh
 touch /var/lib/lkp-automation-data/run.sh
 cp $loc/main/run.sh /var/lib/lkp-automation-data/run.sh
