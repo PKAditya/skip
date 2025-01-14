@@ -140,6 +140,23 @@ fi
 
 # creating the service file, for running the lkp on both the kernels.
 
+
+rm /var/lib/lkp-automation-data/run.sh
+touch /var/lib/lkp-automation-data/run.sh
+cp $loc/main/run.sh /var/lib/lkp-automation-data/run.sh
+FILE_PATH="/var/lib/lkp-automation-data/run.sh"
+
+# Defining the main-state
+sudo touch /var/lib/lkp-automation-data/state-files/main-state
+sudo echo "1" > /var/lib/lkp-automation-data/state-files/main-state
+
+
+# Set the name of the service
+SERVICE_NAME="lkp.service"
+sudo cp $loc/main/lkp.service /etc/systemd/system/lkp.service
+
+
+# install lkp using pre automated code 
 cd $loc/..
 git clone https://github.com/PKumarAditya/LKP_Automated.git
 cd $loc/LKP_Automated
@@ -150,21 +167,12 @@ whack=$(which hackbench)
 rhack="/usr/local/bin/hackbench"
 sudo systemctl stop lkprun.service
 if [[ ! -x "$rlkp" || ! -x "$rhack" ]]; then
-	echo "Either the lkp or hackbench didnot install properly"
-	handle_error "Couldn't install lkp or hackbench, install them manually and run the lkp.service file"
+        echo "Either the lkp or hackbench didnot install properly"
+        handle_error "Couldn't install lkp or hackbench, install them manually and run the lkp.service file"
 fi
 
 
-rm /var/lib/lkp-automation-data/run.sh
-touch /var/lib/lkp-automation-data/run.sh
-cp $loc/main/run.sh /var/lib/lkp-automation-data/run.sh
-FILE_PATH="/var/lib/lkp-automation-data/run.sh"
 
-sudo touch /var/lib/lkp-automation-data/state-files/main-state
-sudo echo "1" > /var/lib/lkp-automation-data/state-files/main-state
-# Set the name of the service
-SERVICE_NAME="lkp.service"
-sudo cp $loc/main/lkp.service /etc/systemd/system/lkp.service
 
 sudo chmod 777 /var/lib/lkp-automation-data/run.sh
 sudo chmod 777 /etc/systemd/system/lkp.service
