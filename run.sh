@@ -160,7 +160,7 @@ sudo cp $loc/main/lkp.service /etc/systemd/system/lkp.service
 # install lkp using pre automated code 
 cd $loc/..
 git clone https://github.com/PKumarAditya/LKP_Automated.git
-cd $loc/LKP_Automated
+cd LKP_Automated
 make
 wlkp=$(which lkp)
 rlkp="/usr/local/bin/lkp"
