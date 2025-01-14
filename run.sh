@@ -148,6 +148,7 @@ FILE_PATH="/var/lib/lkp-automation-data/run.sh"
 
 # Defining the main-state
 sudo touch /var/lib/lkp-automation-data/state-files/main-state
+sudo chmod 666 /var/lib/lkp-automation-data/state-files/main-state
 sudo echo "1" > /var/lib/lkp-automation-data/state-files/main-state
 
 

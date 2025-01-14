@@ -5,6 +5,10 @@ echo "$loc"
 log="/var/log/lkp-automation-data/reboot-log"
 
 STATE_FILE="/var/lib/lkp-automation-data/state-files/main-state"
+if [ ! -f $log ]; then
+	touch $log
+	chmod 666 $log
+fi
 if [ ! -f $STATE_FILE ]; then
 #        touch $STATE_FILE
         touch $log
