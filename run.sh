@@ -3,8 +3,8 @@
 # Graphical Display
 pip install pyfiglet &> /dev/null
 python3 -m pyfiglet "LKP TESTS"
-user=$(echo $USER)
-read -p "[sudo] password for $user" PASS
+read -sp "[sudo] password for $USER: " PASS
+echo
 # Helpers for logs
 sudo mkdir /var/log/lkp-automation-data &> /dev/null
 sudo mkdir /var/lib/lkp-automation-data &> /dev/null
@@ -120,17 +120,17 @@ else
 	  log "Successfully built the base kernel"
   else
 	  log "Intializing the steps to build the kernel with patches"
-          sudo $loc/centos/run.sh $loc $KERNEL_DIR $PATCH_LOCAL_VERSION
-	  sudo touch /var/lib/lkp-automation-data/state-files/patch-kernel-version
-	  sud cp /var/lib/lkp-automation-data/state-files/kernel-version /var/lib/lkp-automation-data/state-files/patch-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
+          echo "$PASS" | sudo -S $loc/centos/run.sh $loc $KERNEL_DIR $PATCH_LOCAL_VERSION
+	  echo "$PASS" | sudo -S touch /var/lib/lkp-automation-data/state-files/patch-kernel-version
+	  echo "$PASS" | sudo -S cp /var/lib/lkp-automation-data/state-files/kernel-version /var/lib/lkp-automation-data/state-files/patch-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
 	  log "Successfully built the kernel patches."
 	  log "Intializing the steps to build the base kernel"
           cd $KERNEL_DIR || handle_error "Failed to navigate to $KERNEL_DIR"
           git switch $BRANCH || handle_error "Couldn't switch to $BRANCH, aborting...."
           git reset --hard $BASE_COMMIT || handle_error "couldn't reset head to the $BASE_COMMIT"
-	  sudo $loc/centos/run.sh $loc $KERNEL_DIR $BASE_LOCAL_VERSION
-	  sudo touch /var/lib/lkp-automation-data/state-files/base-kernel-version
-          sudo cp /var/lib/lkp-automation-data/state-files/kernel-version /var/lib/lkp-automation-data/state-files/base-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
+	  echo "$PASS" | sudo -S $loc/centos/run.sh $loc $KERNEL_DIR $BASE_LOCAL_VERSION
+	  echo "$PASS" | sudo -S touch /var/lib/lkp-automation-data/state-files/base-kernel-version
+          echo "$PASS" | sudo -S /var/lib/lkp-automation-data/state-files/kernel-version /var/lib/lkp-automation-data/state-files/base-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
 	  log "Successfully built the base kernel"
 
 
