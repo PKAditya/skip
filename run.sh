@@ -3,7 +3,8 @@
 # Graphical Display
 pip install pyfiglet &> /dev/null
 python3 -m pyfiglet "LKP TESTS"
-
+user=$(echo $USER)
+read -p "[sudo] password for $user" PASS
 # Helpers for logs
 sudo mkdir /var/log/lkp-automation-data &> /dev/null
 sudo mkdir /var/lib/lkp-automation-data &> /dev/null
@@ -106,8 +107,8 @@ else
   if [ "$user" == "amd" ]; then
 	  log "Intializing the steps to build the kernel with patches"
           echo 'Amd$1234!' |  sudo -S $loc/centos/run.sh $loc $KERNEL_DIR $PATCH_LOCAL_VERSION
-	  sudo touch /var/lib/lkp-automation-data/state-files/patch-kernel-version
-	  sudo cp /var/lib/lkp-automation-data/state-files/kernel-version /var/lib/lkp-automation-data/state-files/patch-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
+	  echo 'Amd$1234!' |  sudo -S touch /var/lib/lkp-automation-data/state-files/patch-kernel-version
+	  echo 'Amd$1234!' |  sudo -S cp /var/lib/lkp-automation-data/state-files/kernel-version /var/lib/lkp-automation-data/state-files/patch-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
 	  log "Successfully built the kernel patches."
 	  log "Intializing the steps to build the base kernel"
           cd $KERNEL_DIR || handle_error "Failed to navigate to $KERNEL_DIR"
