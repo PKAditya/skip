@@ -174,7 +174,7 @@ if [[ ! -x "$rlkp" || ! -x "$rhack" ]]; then
 fi
 
 
-
+sudo cp result.sh /lkp/result/result.sh
 
 sudo chmod 777 /var/lib/lkp-automation-data/run.sh
 sudo chmod 777 /etc/systemd/system/lkp.service
