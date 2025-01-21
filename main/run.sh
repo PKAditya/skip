@@ -60,7 +60,7 @@ while true; do
                                 rm -rf /lkp/result/hackbench/*
                                 rm -rf /lkp/result/ebizzy/*
                                 rm -rf /lkp/result/unixbench/*
-				/var/lib/lkprun.sh
+				/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
 				# echo "3" > /var/lib/lkp-automation-data/state-files/main-state
 				cd /lkp/result/
 				mkdir /var/lib/lkp-automation-data/results
@@ -90,7 +90,7 @@ while true; do
 				rm -rf /lkp/result/hackbench/*
 				rm -rf /lkp/result/ebizzy/*
 				rm -rf /lkp/result/unixbench/*
-				/var/lib/lkprun.sh
+				/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
 				touch /var/lib/lkp-automation-data/results/without_vms_with_patches
 				cd /lkp/result/
 				/lkp/result/result.sh > /var/lib/lkp-automation-data/results/without_vms_with_patches
