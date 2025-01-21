@@ -57,6 +57,9 @@ while true; do
 			if [[ "$BASE_LOCAL_VERSION" == "$tmp" ]]; then
 				echo "Base kernel is installed on the system, starting the lkp"
 				# systemctl start lkprun.service
+                                rm -rf /lkp/result/hackbench/*
+                                rm -rf /lkp/result/ebizzy/*
+                                rm -rf /lkp/result/unixbench/*
 				/var/lib/lkprun.sh
 				# echo "3" > /var/lib/lkp-automation-data/state-files/main-state
 				cd /lkp/result/
