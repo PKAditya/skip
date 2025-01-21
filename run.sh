@@ -130,7 +130,7 @@ else
           git reset --hard $BASE_COMMIT || handle_error "couldn't reset head to the $BASE_COMMIT"
 	  echo "$PASS" | sudo -S $loc/centos/run.sh $loc $KERNEL_DIR $BASE_LOCAL_VERSION
 	  echo "$PASS" | sudo -S touch /var/lib/lkp-automation-data/state-files/base-kernel-version
-          echo "$PASS" | sudo -S /var/lib/lkp-automation-data/state-files/kernel-version /var/lib/lkp-automation-data/state-files/base-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
+          echo "$PASS" | sudo -S cp /var/lib/lkp-automation-data/state-files/kernel-version /var/lib/lkp-automation-data/state-files/base-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
 	  log "Successfully built the base kernel"
 
 
