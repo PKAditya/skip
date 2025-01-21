@@ -59,6 +59,10 @@ while true; do
 				# systemctl start lkprun.service
 				/var/lib/lkprun.sh
 				# echo "3" > /var/lib/lkp-automation-data/state-files/main-state
+				cd /lkp/result/
+				mkdir /var/lib/lkp-automation-data/results
+				touch /var/lib/lkp-automation-data/results/without_vms_base
+				/lkp/result/result.sh > /var/lib/lkp-automation-data/results/without_vms_base
 				update_state "3"
 			else
 				handle_error "Base Kernel is not installed on the system"
@@ -80,7 +84,13 @@ while true; do
 			tmp2=$(uname -r)
 			if [[ "$PATCH_LOCAL_VERSION" == "$tmp2" ]]; then
 				# systemctl start lkprun.service
+				rm -rf /lkp/result/hackbench/*
+				rm -rf /lkp/result/ebizzy/*
+				rm -rf /lkp/result/unixbench/*
 				/var/lib/lkprun.sh
+				touch /var/lib/lkp-automation-data/results/without_vms_with_patches
+				cd /lkp/result/
+				/lkp/result/result.sh > /var/lib/lkp-automation-data/results/without_vms_with_patches
                         	#echo "5" > /var/lib/lkp-automation-data/state-files/main-state
 				update_state "5"
 				echo "Kernel with patches is installed on the system, starting the lkp"
