@@ -177,6 +177,7 @@ cd ..
 cd LKP_Automated
 echo "$PASS" | sudo -S touch /lkp/result/result.sh
 echo "$PASS" | sudo -S cp result.sh /lkp/result/result.sh || handle_error "Couldn't copy the script that is needed to store the lkp results to /lkp/result directory "
+sudo chmod +x /lkp/result/result.sh
 
 echo "$PASS" | sudo -S chmod 777 /var/lib/lkp-automation-data/run.sh
 echo "$PASS" | sudo -S chmod 777 /etc/systemd/system/lkp.service
