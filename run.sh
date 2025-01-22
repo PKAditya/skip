@@ -138,15 +138,31 @@ rlkp="/usr/local/bin/lkp"
 whack=$(which hackbench)
 rhack="/usr/local/bin/hackbench"
 
-if [[ -x "$rlkp" && -x "$rhack" ]]; the
+cd $loc
+cd ../
+git clone https://github.com/PKumarAditya/LKP_Automated.git
+
+if [[ -x "$rlkp" && -x "$rhack" ]]; then
 	log "lkp and hackbench are already present in the system, moving to the next step"
+	log "creating lkp files for running lkp"
+        echo "$PASS" | sudo -S touch /tmp/PASS
+        echo "$PASS" | sudo -S echo "$PASS" > /tmp/PASS
+        cd $loc
+        cd ../
+        cd LKP_Automated
+        make
+        echo "$PASS" | sudo -S systemctl stop lkprun.service
+        if [[ ! -x "$rlkp" || ! -x "$rhack" ]]; then
+                echo "Either the lkp or hackbench didnot install properly"
+                handle_error "Couldn't install lkp or hackbench, install them manually and run the lkp.service file"
+        fi
+
 else
 	log "Couldn't find lkp and hackbench in the system, installing lkp and hackbench"
 	echo "$PASS" | sudo -S touch /tmp/PASS
 	echo "$PASS" | sudo -S echo "$PASS" > /tmp/PASS
-	# install lkp using pre automated code 
-	cd $loc/..
-	git clone https://github.com/PKumarAditya/LKP_Automated.git
+	cd $loc
+	cd ../
 	cd LKP_Automated
 	make
 	echo "$PASS" | sudo -S systemctl stop lkprun.service
