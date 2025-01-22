@@ -30,6 +30,9 @@ log "Captured current working directory: $loc"
 # capture type of distro.
 distro=$(cat /etc/os-release | grep ^ID= | cut -d'=' -f2)
 user=$(echo $USER)
+current_kernel=$(uname -r)
+echo "$PASS" | sudo -S touch /var/lib/lkp-automation-data/previous-kernel-name
+echo "$PASS" | sudo -S echo "$current_kernel" > /var/lib/lkp-automation-data/previous-kernel-name
 log "Captured current distro: $distro, current user: $user"
 
 log "Creating a directory for storing the built packages"
