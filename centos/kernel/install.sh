@@ -1,6 +1,7 @@
 #!/bin/bash
 
 LOCAL_VERSION=$1
+PASS=$2
 # log handling
 log=/var/log/lkp-automation-data/pre-reboot-log
 log() {
@@ -37,7 +38,7 @@ cp $KERNEL_PACKAGE /var/lib/lkp-automation-data/PACKAGES
 echo "/////////kernel-name: $KERNEL_PACKAGE /////////////////"
 
 log "Installing the built rpm package"
-sudo rpm -ivh "$KERNEL_PACKAGE" --force || handle_error "Failed to install the $KERNEL_PACKAGE rpm"
+echo "$PASS" | sudo -S rpm -ivh "$KERNEL_PACKAGE" --force || handle_error "Failed to install the $KERNEL_PACKAGE rpm"
 log "Installed the built rpm package"
 
 touch /var/lib/lkp-automation-data/state-files/kernel-package
@@ -46,14 +47,14 @@ echo "$KERNEL_PACKAGE" > /var/lib/lkp-automation-data/state-files/kernel-package
 log "Grepping for kernel version"
 KERNEL_VERSION=$(rpm -qp --queryformat '%{VERSION}\n' "$KERNEL_PACKAGE") || handle_error "Couldn't capture the installed rpm version"
 log "Captured kernel version: $KERNEL_VERSION"
-rm /var/lib/lkp-automation-data/state-files/kernel-version &> /dev/null
-touch /var/lib/lkp-automation-data/state-files/kernel-version
-echo "$KERNEL_VERSION" > /var/lib/lkp-automation-data/state-files/kernel-version
+echo "$PASS" | sudo -S rm /var/lib/lkp-automation-data/state-files/kernel-version &> /dev/null
+echo "$PASS" | sudo -S touch /var/lib/lkp-automation-data/state-files/kernel-version
+echo "$PASS" | sudo -S echo "$KERNEL_VERSION" > /var/lib/lkp-automation-data/state-files/kernel-version
 
 
 echo "version: $KERNEL_VERSION"
-sudo grubby --set-default "/boot/vmlinuz-$KERNEL_VERSION" || handle_error "Failed to set default kernel"
+echo "$PASS" | sudo -S grubby --set-default "/boot/vmlinuz-$KERNEL_VERSION" || handle_error "Failed to set default kernel"
 
-sudo grubby --default-kernel
+echo "$PASS" | sudo -S grubby --default-kernel
 
 log "Going out of centos/kernel/install.sh script"

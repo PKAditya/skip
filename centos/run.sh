@@ -3,11 +3,11 @@
 loc=$1
 KERNEL_DIR=$2
 LOCAL_VERSION=$3
-
+PASS=$4
 if [ ! -d /var/lib/lkp-automation-data/state-files ]; then
-	mkdir /var/lib/lkp-automation-data/state-files
+	echo "$PASS" | sudo -S mkdir /var/lib/lkp-automation-data/state-files &> /dev/null
 fi
-touch /var/lib/lkp-automation-data/state-files/kernel_name
+touch /var/lib/lkp-automation-data/state-files/kernel_name &> /dev/null
 
 
 # log handling
@@ -24,5 +24,5 @@ log "Entered $loc/centos directory"
 cd $KERNEL_DIR || handle_error "Couldnt switch to $KERNEL_DIR"
 log "Current working directory: $KERNEL_DIR"
 # running kernel build help script
-sudo $loc/centos/kernel/run.sh $loc $KERNEL_DIR $LOCAL_VERSION || handle_error "Failed to run kernel build steps"
+echo "$PASS" | sudo -S $loc/centos/kernel/run.sh $loc $KERNEL_DIR $LOCAL_VERSION $PASS || handle_error "Failed to run kernel build steps"
 log "Going out of centos directory"
