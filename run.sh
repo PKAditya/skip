@@ -157,20 +157,25 @@ sudo echo "1" > /var/lib/lkp-automation-data/state-files/main-state
 SERVICE_NAME="lkp.service"
 sudo cp $loc/main/lkp.service /etc/systemd/system/lkp.service
 
-
-# install lkp using pre automated code 
-cd $loc/..
-git clone https://github.com/PKumarAditya/LKP_Automated.git
-cd LKP_Automated
-make
 wlkp=$(which lkp)
 rlkp="/usr/local/bin/lkp"
 whack=$(which hackbench)
 rhack="/usr/local/bin/hackbench"
-sudo systemctl stop lkprun.service
-if [[ ! -x "$rlkp" || ! -x "$rhack" ]]; then
-        echo "Either the lkp or hackbench didnot install properly"
-        handle_error "Couldn't install lkp or hackbench, install them manually and run the lkp.service file"
+
+if [[ -x "$rlkp" && -x "$rhack" ]]; the
+	log "lkp and hackbench are already present in the system, moving to the next step"
+else
+	log "Couldn't find lkp and hackbench in the system, installing lkp and hackbench"
+	# install lkp using pre automated code 
+	cd $loc/..
+	git clone https://github.com/PKumarAditya/LKP_Automated.git
+	cd LKP_Automated
+	make
+	sudo systemctl stop lkprun.service
+	if [[ ! -x "$rlkp" || ! -x "$rhack" ]]; then
+		echo "Either the lkp or hackbench didnot install properly"
+		handle_error "Couldn't install lkp or hackbench, install them manually and run the lkp.service file"
+	fi
 fi
 
 
