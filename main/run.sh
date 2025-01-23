@@ -107,6 +107,13 @@ while true; do
 			fi
 			;;
 		"5")
+			OUTPUT_FILE="/var/lib/lkp-automation-data/results/result.csv"
+			sudo touch OUTPUT_FILE
+			echo "Base_kernel_with_no_vms,Patches_kernel_with_no_vms" > $OUTPUT_FILE
+			BASE1="/var/lib/lkp-automation-data/results/without_vms_base"
+			PATCH1="/var/lib/lkp-automation-data/results/without_vms_with_patches"
+			paste -d',' "$BASE1" "$PATCH1" >> "$OUTPUT_FILE"
+			
 			rm $STATE_FILE	
 			log "kernel is being changed to the kernel before the lkp has been run"
 			kernel_name=$(cat /var/lib/lkp-automation-data/previous-kernel-name)
