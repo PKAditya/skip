@@ -108,8 +108,6 @@ while true; do
 			;;
 		"5")
 			rm $STATE_FILE	
-			systemctl daemon-reload
-			systemctl stop lkp.service
 			log "kernel is being changed to the kernel before the lkp has been run"
 			kernel_name=$(cat /var/lib/lkp-automation-data/previous-kernel-name)
 			old_kernel=/boot/vmlinuz-$kernel_name
@@ -120,6 +118,8 @@ while true; do
 			patch="/boot/vmlinuz-$PATCH_LOCAL_VERSION"
 			sudo yum remove $patch -y
 			log "uninstalled /boot/vmlinuz-$PATCH_LOCAL_VERSION kernel image from the system"
+			systemctl daemon-reload
+			systemctl stop lkp.service
 			;;
 	esac
 	sleep 5
