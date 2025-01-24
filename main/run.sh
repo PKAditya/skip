@@ -67,7 +67,7 @@ while true; do
 				cd /lkp/result/
 				touch /var/lib/lkp-automation-data/results/without_vms_base
 				/lkp/result/result.sh > /var/lib/lkp-automation-data/results/without_vms_base
-				echo "base_kernel,kernel_with_patches"
+				echo "base_kernel,kernel_with_patches" > $OUTPUT_FILE
 				awk '{print $0","}' /var/lib/lkp-automation-data/results/without_vms_base >> $OUTPUT_FILE
 				update_state "3"
 			else
@@ -95,7 +95,8 @@ while true; do
 				/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
 				touch /var/lib/lkp-automation-data/results/without_vms_with_patches
 				cd /lkp/result/
-				/lkp/result/result.sh > /var/lib/lkp-automation-data/results/without_vms_with_patches
+				echo "" > /var/lib/lkp-automation-data/results/without_vms_with_patches 
+				/lkp/result/result.sh >> /var/lib/lkp-automation-data/results/without_vms_with_patches
 				paste -d '' $OUTPUT_FILE /var/lib/lkp-automation-data/results/without_vms_with_patches > temp.csv && mv temp.csv $OUTPUT_FILE
 				update_state "5"
 				echo "Kernel with patches is installed on the system, starting the lkp"
