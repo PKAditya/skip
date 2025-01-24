@@ -42,35 +42,33 @@ log "Enterance of main function"
 mkdir /var/lib/lkp-automation-data/results
 log "created results directory in location /var/lib/lkp-automation-data/results"
 OUTPUT_FILE="/var/lib/lkp-automation-data/results/result.csv"
-sudo touch OUTPUT_FILE
-TEMP_OUTPUT=$(/lkp/result/result.sh)
+sudo touch $OUTPUT_FILE
 while true; do
 	current_state=$(cat $STATE_FILE)
 	case $current_state in
 		"1")
 			name=/boot/vmlinuz-$BASE_LOCAL_VERSION
-			grubby --set-default=$name
+			grubby --set-default=$name || handle_error "Couldn't set base kernel as the deafult-kernel"
 			chmod 755 $name
 			grub2-mkconfig -o /boot/grub2/grub.cfg
-			update_state "2"
 			log "System about to reboot with base_patches"
 			echo "Applied base kernel, BASE_KERNEL:$BASE_LOCAL_VERSION"			
+			rm -rf /lkp/result/hackbench/*
+			rm -rf /lkp/result/ebizzy/*
+			rm -rf /lkp/result/unixbench/*
+			update_state "2"
 			reboot
 			;;
 		"2")
 			tmp=$(uname -r)
 			if [[ "$BASE_LOCAL_VERSION" == "$tmp" ]]; then
 				echo "Base kernel is installed on the system, starting the lkp"
-				# systemctl start lkprun.service
-                                rm -rf /lkp/result/hackbench/*
-                                rm -rf /lkp/result/ebizzy/*
-                                rm -rf /lkp/result/unixbench/*
 				/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
-				# echo "3" > /var/lib/lkp-automation-data/state-files/main-state
 				cd /lkp/result/
 				touch /var/lib/lkp-automation-data/results/without_vms_base
 				/lkp/result/result.sh > /var/lib/lkp-automation-data/results/without_vms_base
-				echo "$TEMP_OUTPUT" > "$OUTPUT_FILE"
+				echo "base_kernel,kernel_with_patches"
+				awk '{print $0","}' /var/lib/lkp-automation-data/results/without_vms_base >> $OUTPUT_FILE
 				update_state "3"
 			else
 				handle_error "Base Kernel is not installed on the system"
@@ -80,45 +78,34 @@ while true; do
 		"3")
 			echo "came to step-3"
 			name2=/boot/vmlinuz-$PATCH_LOCAL_VERSION
-                	grubby --set-default=$name2
+                	grubby --set-default=$name2 || handle_error "Couldn't set kernel with patches as default kernel"
                 	grub2-mkconfig -o /boot/grub2/grub.cfg
                 	chmod 755 $name2
-                	update_state "4"
                 	echo "Applied kernel with patches, PATCHES_KERNEL:$PATCH_LOCAL_VERSION"
+			rm -rf /lkp/result/hackbench/*
+			rm -rf /lkp/result/ebizzy/*
+			rm -rf /lkp/result/unixbench/*
+			update_state "4"
                 	reboot
 			;;
 	
 		"4")
 			tmp2=$(uname -r)
 			if [[ "$PATCH_LOCAL_VERSION" == "$tmp2" ]]; then
-				# systemctl start lkprun.service
-				rm -rf /lkp/result/hackbench/*
-				rm -rf /lkp/result/ebizzy/*
-				rm -rf /lkp/result/unixbench/*
 				/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
 				touch /var/lib/lkp-automation-data/results/without_vms_with_patches
 				cd /lkp/result/
 				/lkp/result/result.sh > /var/lib/lkp-automation-data/results/without_vms_with_patches
-                        	#echo "5" > /var/lib/lkp-automation-data/state-files/main-state
-				paste -d',' "$OUTPUT_FILE" <(echo "$TEMP_OUTPUT") > "$OUTPUT_FILE.tmp"
-				mv "$OUTPUT_FILE.tmp" "$OUTPUT_FILE"
+				paste -d '' $OUTPUT_FILE /var/lib/lkp-automation-data/results/without_vms_with_patches > temp.csv && mv temp.csv $OUTPUT_FILE
 				update_state "5"
 				echo "Kernel with patches is installed on the system, starting the lkp"
-				# systemctl start lkprun.service
-				#rm $STATE_FILE
 				log "SUCCESSFULLY Completed the booting."
-				# rm $STATE_FILE
 			else
 				echo "couldn't install patches kernel"
 				handle_error "Couldn't install patches kernel"
 			fi
 			;;
 		"5")
-			echo "Base_kernel_with_no_vms,Patches_kernel_with_no_vms" > $OUTPUT_FILE
-			BASE1="/var/lib/lkp-automation-data/results/without_vms_base"
-			PATCH1="/var/lib/lkp-automation-data/results/without_vms_with_patches"
-			paste -d',' "$BASE1" "$PATCH1" >> "$OUTPUT_FILE"
-			
 			rm $STATE_FILE	
 			log "kernel is being changed to the kernel before the lkp has been run"
 			kernel_name=$(cat /var/lib/lkp-automation-data/previous-kernel-name)
