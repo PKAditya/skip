@@ -4,6 +4,13 @@
 pip install pyfiglet &> /dev/null
 python3 -m pyfiglet "LKP TESTS"
 # Helpers for logs
+
+user=$(echo $USER)
+if [ "$USER" != "root" ]; then
+   echo "Error: Must run as root"
+   exit 1
+fi
+
 mkdir /var/log/lkp-automation-data &> /dev/null
 mkdir /var/lib/lkp-automation-data &> /dev/null
 log=/var/log/lkp-automation-data/pre-reboot-log
@@ -27,7 +34,6 @@ echo "$loc" > /var/lib/lkp-automation-data/loc
 log "Captured current working directory: $loc"
 # capture type of distro.
 distro=$(cat /etc/os-release | grep ^ID= | cut -d'=' -f2)
-user=$(echo $USER)
 current_kernel=$(uname -r)
 touch /var/lib/lkp-automation-data/previous-kernel-name
 echo "$current_kernel" > /var/lib/lkp-automation-data/previous-kernel-name
