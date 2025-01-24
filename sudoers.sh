@@ -15,7 +15,6 @@ handle_error() {
 log "Entered the sudoers.sh script"
 # giving the current user root priviledges
 user=$1
-PASS=$2
 log "Got $user as input from run.sh"
 log "Giving the user the root privledges"
 sudoers_pattern="^$user[[:space:]]\+ALL=(ALL)[[:space:]]\+ALL"

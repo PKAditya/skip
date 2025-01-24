@@ -15,7 +15,6 @@ echo "DIR:$1"
 echo "name:$2"
 KERNEL_DIR=$1
 name=$2
-PASS=$3
 log "Recieved input from previous run, KERNEL_DIR: $1 and name: $2"
 
 

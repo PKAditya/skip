@@ -3,7 +3,6 @@
 loc=$1
 KERNEL_DIR=$2
 LOCAL_VERSION=$3
-PASS=$4
 
 log=/var/log/lkp-automation-data/pre-reboot-log
 
