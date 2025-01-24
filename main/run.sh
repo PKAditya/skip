@@ -39,6 +39,11 @@ update_state() {
 }
 
 log "Enterance of main function"
+mkdir /var/lib/lkp-automation-data/results
+log "created results directory in location /var/lib/lkp-automation-data/results"
+OUTPUT_FILE="/var/lib/lkp-automation-data/results/result.csv"
+sudo touch OUTPUT_FILE
+TEMP_OUTPUT=$(/lkp/result/result.sh)
 while true; do
 	current_state=$(cat $STATE_FILE)
 	case $current_state in
@@ -63,9 +68,9 @@ while true; do
 				/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
 				# echo "3" > /var/lib/lkp-automation-data/state-files/main-state
 				cd /lkp/result/
-				mkdir /var/lib/lkp-automation-data/results
 				touch /var/lib/lkp-automation-data/results/without_vms_base
 				/lkp/result/result.sh > /var/lib/lkp-automation-data/results/without_vms_base
+				echo "$TEMP_OUTPUT" > "$OUTPUT_FILE"
 				update_state "3"
 			else
 				handle_error "Base Kernel is not installed on the system"
@@ -95,6 +100,8 @@ while true; do
 				cd /lkp/result/
 				/lkp/result/result.sh > /var/lib/lkp-automation-data/results/without_vms_with_patches
                         	#echo "5" > /var/lib/lkp-automation-data/state-files/main-state
+				paste -d',' "$OUTPUT_FILE" <(echo "$TEMP_OUTPUT") > "$OUTPUT_FILE.tmp"
+				mv "$OUTPUT_FILE.tmp" "$OUTPUT_FILE"
 				update_state "5"
 				echo "Kernel with patches is installed on the system, starting the lkp"
 				# systemctl start lkprun.service
@@ -107,8 +114,6 @@ while true; do
 			fi
 			;;
 		"5")
-			OUTPUT_FILE="/var/lib/lkp-automation-data/results/result.csv"
-			sudo touch OUTPUT_FILE
 			echo "Base_kernel_with_no_vms,Patches_kernel_with_no_vms" > $OUTPUT_FILE
 			BASE1="/var/lib/lkp-automation-data/results/without_vms_base"
 			PATCH1="/var/lib/lkp-automation-data/results/without_vms_with_patches"
