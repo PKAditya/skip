@@ -109,9 +109,9 @@ while true; do
 		"5")
 			rm $STATE_FILE	
 			log "kernel is being changed to the kernel before the lkp has been run"
-			kernel_name=$(cat /var/lib/lkp-automation-data/previous-kernel-name)
-			old_kernel=/boot/vmlinuz-$kernel_name
-			grubby --set-default=$old_kernel
+			kernel_nameo=$(cat /var/lib/lkp-automation-data/previous-kernel-name)
+			old_kernel=/boot/vmlinuz-$kernel_nameo
+			grubby --set-default=$old_kernel || handle_error "Couldn't set the previous kernel as the default kernel"
 			base="/boot/vmlinuz-$BASE_LOCAL_VERSION"
 			sudo yum remove $base -y
 			log "uninstalled the /boot/vmlinuz-$BASE_LOCAL_VERSION kernel image from the system"
@@ -120,6 +120,7 @@ while true; do
 			log "uninstalled /boot/vmlinuz-$PATCH_LOCAL_VERSION kernel image from the system"
 			systemctl daemon-reload
 			systemctl stop lkp.service
+			reboot
 			;;
 	esac
 	sleep 5
