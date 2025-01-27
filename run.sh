@@ -59,6 +59,17 @@ echo " "
 read -p "Enter kernel repository path: " KERNEL_DIR
 read -p "Enter the branch name with out including the remote repository: " BRANCH
 read -p "Enter the commit sha id of the base_kernel: " BASE_COMMIT
+read -p "Enter the vm name without lkp on it: " VM
+read -p "Enter the vm name with lkp on it: " LKP
+
+chmod +x check_vm.sh
+$loc/check_vm.sh $VM || handle_error "$VM doesn't exists" 
+$loc/check_vm.sh $LKP || handle_error "$LKP doesn't exists"
+
+echo $VM > /var/lib/lkp-automation-data/VM
+echo $LKP > /var/lib/lkp-automation-data/LKP
+
+log "Captured the vms for the 2nd and 3rd stage of the lkp running, which are $VM and $LKP" 
 log "Captured the user input"
 
 # saving the input to a tmp file
@@ -69,6 +80,19 @@ echo "KERNEL_DIR:$KERNEL_DIR" >> $USER_INPUT
 echo "BRANCH:$BRANCH" >> $USER_INPUT
 echo "BASE_COMMIT:$BASE_COMMIT" >> $USER_INPUT
 log "Find the user given input in $USER_INPUT"
+
+#cloning the vms for the 2nd and 3rd run of the lkp
+virsh destroy $VM
+virt-clone --original $VM --name vm2 --auto-clone
+virsh destroy vm2
+virt-clone --original $VM --name vm3 --auto-clone
+virsh destroy vm3
+virt-clone --original $VM --name vm4 --auto-clone
+virsh destroy vm4
+virt-clone --original $VM --name vm5 --auto-clone
+virsh destroy vm5
+
+
 
 # Modifying sudoers 
 $loc/sudoers.sh $user || handle_error "Couldn't run sudoers modification script"
