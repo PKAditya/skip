@@ -65,13 +65,39 @@ while true; do
 		"2")
 			tmp=$(uname -r)
 			if [[ "$BASE_LOCAL_VERSION" == "$tmp" ]]; then
+				/var/lib/lkp-automation-data/shutdown-vms.sh
 				echo "Base kernel is installed on the system, starting the lkp"
 				/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
 				cd /lkp/result/
 				touch /var/lib/lkp-automation-data/results/without_vms_base
 				/lkp/result/result.sh > /var/lib/lkp-automation-data/results/without_vms_base
-				echo "base_kernel,kernel_with_patches" > $OUTPUT_FILE
 				awk '{print $0","}' /var/lib/lkp-automation-data/results/without_vms_base >> $OUTPUT_FILE
+				virsh destroy $VM
+				virt-clone --original $VM --name ${vm}2 --auto-clone
+				virt-clone --original $VM --name ${vm}3 --auto-clone
+				virt-clone --original $VM --name ${vm}4 --auto-clone
+				virt-clone --original $VM --name ${vm}5 --auto-clone
+				virsh start $VM
+                                virsh start ${VM}2
+                                virsh start ${VM}3
+                                virsh start ${VM}4
+                                virsh start ${VM}5
+				rm -rf /lkp/result/hackbench/*
+				rm -rf /lkp/result/ebizzy/*
+				rm -rf /lkp/result/unixbench/*
+				/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
+                                cd /lkp/result/
+                                touch /var/lib/lkp-automation-data/results/base_with_5_vms
+                                /lkp/result/result.sh > /var/lib/lkp-automation-data/results/base_with_5_vms
+				/var/lib/lkp-automation-data/shutdown-vms.sh
+				virsh undefine $VM --remove-all-storage
+				virsh undefine ${VM}2 --remove-all-storage
+				virsh undefine ${VM}3 --remove-all-storage
+				virsh undefine ${VM}4 --remove-all-storage
+				virsh undefine ${VM}5 --remove-all-storage
+
+
+				
 				update_state "3"
 			else
 				handle_error "Base Kernel is not installed on the system"

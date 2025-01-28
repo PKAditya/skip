@@ -81,19 +81,6 @@ echo "BRANCH:$BRANCH" >> $USER_INPUT
 echo "BASE_COMMIT:$BASE_COMMIT" >> $USER_INPUT
 log "Find the user given input in $USER_INPUT"
 
-#cloning the vms for the 2nd and 3rd run of the lkp
-virsh destroy $VM
-virt-clone --original $VM --name ${vm}2 --auto-clone
-virsh destroy ${vm}2
-virt-clone --original $VM --name ${vm}3 --auto-clone
-virsh destroy ${vm}3
-virt-clone --original $VM --name ${vm}4 --auto-clone
-virsh destroy ${vm}4
-virt-clone --original $VM --name ${vm}5 --auto-clone
-virsh destroy ${vm}5
-
-
-
 # Modifying sudoers 
 $loc/sudoers.sh $user || handle_error "Couldn't run sudoers modification script"
 echo ""
@@ -135,8 +122,9 @@ else
 
 
 fi
-
-
+touch /var/lib/lkp-automation-data/shutdown-vms.sh
+cp $loc/shutdown-vms.sh /var/lib/lkp-automation-data/shutdown-vms.sh
+chmod +x /var/lib/lkp-automation-data/shutdown-vms.sh
 
 # creating the service file, for running the lkp on both the kernels.
 
