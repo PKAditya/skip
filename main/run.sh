@@ -69,6 +69,7 @@ while true; do
 				echo "Base kernel is installed on the system, starting the lkp"
 				/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
 				cd /lkp/result/
+				BR1=/var/lib/lkp-automation-data/results/without_vms_base
 				touch /var/lib/lkp-automation-data/results/without_vms_base
 				/lkp/result/result.sh > /var/lib/lkp-automation-data/results/without_vms_base
 				awk '{print $0","}' /var/lib/lkp-automation-data/results/without_vms_base >> $OUTPUT_FILE
@@ -87,17 +88,55 @@ while true; do
 				rm -rf /lkp/result/unixbench/*
 				/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
                                 cd /lkp/result/
+				BR2=/var/lib/lkp-automation-data/results/base_with_5_vms
                                 touch /var/lib/lkp-automation-data/results/base_with_5_vms
                                 /lkp/result/result.sh > /var/lib/lkp-automation-data/results/base_with_5_vms
 				/var/lib/lkp-automation-data/shutdown-vms.sh
-				virsh undefine $VM --remove-all-storage
 				virsh undefine ${VM}2 --remove-all-storage
 				virsh undefine ${VM}3 --remove-all-storage
 				virsh undefine ${VM}4 --remove-all-storage
 				virsh undefine ${VM}5 --remove-all-storage
-
-
-				
+				rm -rf /lkp/result/hackbench/*
+                                rm -rf /lkp/result/ebizzy/*
+                                rm -rf /lkp/result/unixbench/*
+				virt-clone --original $LKP --name ${LKP}2 --autoclone
+				virt-clone --original $LKP --name ${LKP}3 --autoclone
+				virt-clone --original $LKP --name ${LKP}4 --autoclone
+				virt-clone --original $LKP --name ${LKP}5 --autoclone
+				virt-clone --original $LKP --name ${LKP}6 --autoclone
+				virt-clone --original $LKP --name ${LKP}7 --autoclone
+				virt-clone --original $LKP --name ${LKP}8 --autoclone
+				virt-clone --original $LKP --name ${LKP}9 --autoclone
+				virt-clone --original $LKP --name ${LKP}10 --autoclone
+				virsh start $LKP
+				virsh start ${LKP}2
+				virsh start ${LKP}3
+				virsh start ${LKP}4
+				virsh start ${LKP}5
+				virsh start ${LKP}6
+				virsh start ${LKP}7
+				virsh start ${LKP}8
+				virsh start ${LKP}9
+				virsh start ${LKP}10
+				/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
+                                cd /lkp/result/
+				BR3=/var/lib/lkp-automation-data/results/base_with_10_vms
+                                touch /var/lib/lkp-automation-data/results/base_with_10_vms
+                                /lkp/result/result.sh > /var/lib/lkp-automation-data/results/base_with_10_vms
+                                /var/lib/lkp-automation-data/shutdown-vms.sh
+				virsh undefine ${LKP}2 --remove-all-storage
+				virsh undefine ${LKP}3 --remove-all-storage
+				virsh undefine ${LKP}4 --remove-all-storage
+				virsh undefine ${LKP}5 --remove-all-storage
+				virsh undefine ${LKP}6 --remove-all-storage
+				virsh undefine ${LKP}7 --remove-all-storage
+				virsh undefine ${LKP}8 --remove-all-storage
+				virsh undefine ${LKP}9 --remove-all-storage
+				virsh undefine ${LKP}10 --remove-all-storage
+				BASE_OUTPUT=/var/lib/lkp-automation-data/results/base-results.csv
+				touch $BASE_OUTPUT
+				echo "Without vms,with 5 vms,with 10 vms" > $BASE_OUTPUT
+				paste -d',' "$BR1" "$BR2" "$BR3" >> $BASE_OUTPUT
 				update_state "3"
 			else
 				handle_error "Base Kernel is not installed on the system"
