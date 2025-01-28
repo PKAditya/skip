@@ -83,14 +83,14 @@ log "Find the user given input in $USER_INPUT"
 
 #cloning the vms for the 2nd and 3rd run of the lkp
 virsh destroy $VM
-virt-clone --original $VM --name vm2 --auto-clone
-virsh destroy vm2
-virt-clone --original $VM --name vm3 --auto-clone
-virsh destroy vm3
-virt-clone --original $VM --name vm4 --auto-clone
-virsh destroy vm4
-virt-clone --original $VM --name vm5 --auto-clone
-virsh destroy vm5
+virt-clone --original $VM --name ${vm}2 --auto-clone
+virsh destroy ${vm}2
+virt-clone --original $VM --name ${vm}3 --auto-clone
+virsh destroy ${vm}3
+virt-clone --original $VM --name ${vm}4 --auto-clone
+virsh destroy ${vm}4
+virt-clone --original $VM --name ${vm}5 --auto-clone
+virsh destroy ${vm}5
 
 
 

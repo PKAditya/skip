@@ -43,6 +43,9 @@ mkdir /var/lib/lkp-automation-data/results
 log "created results directory in location /var/lib/lkp-automation-data/results"
 OUTPUT_FILE="/var/lib/lkp-automation-data/results/result.csv"
 sudo touch $OUTPUT_FILE
+
+VM=$(cat /var/lib/lkp-automation-data/VM)
+LKP=$(cat /var/lib/lkp-automation-data/LKP)
 while true; do
 	current_state=$(cat $STATE_FILE)
 	case $current_state in
