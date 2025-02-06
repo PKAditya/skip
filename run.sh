@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Graphical Display
+yum install python3-pip -y &> /dev/null
 pip install pyfiglet &> /dev/null
 python3 -m pyfiglet "LKP TESTS"
 # Helpers for logs
@@ -13,6 +14,7 @@ fi
 
 mkdir /var/log/lkp-automation-data &> /dev/null
 mkdir /var/lib/lkp-automation-data &> /dev/null
+mkdir /var/lib/lkp-automation-data/state-files &> /dev/null
 log=/var/log/lkp-automation-data/pre-reboot-log
 touch $log &> /dev/null
 
@@ -61,13 +63,22 @@ read -p "Enter the branch name with out including the remote repository: " BRANC
 read -p "Enter the commit sha id of the base_kernel: " BASE_COMMIT
 read -p "Enter the vm name without lkp on it: " VM
 read -p "Enter the vm name with lkp on it: " LKP
-
+read -p "Enter the number of vms required without lkp on them: " n1
+read -p "Enter the number of vms required with lkp on them: " n2
 chmod +x check_vm.sh
 $loc/check_vm.sh $VM || handle_error "$VM doesn't exists" 
 $loc/check_vm.sh $LKP || handle_error "$LKP doesn't exists"
 
 echo $VM > /var/lib/lkp-automation-data/VM
 echo $LKP > /var/lib/lkp-automation-data/LKP
+
+
+touch /var/lib/lkp-automation-data/state-files/nvms1
+echo "$n1" > /var/lib/lkp-automation-data/state-files/nvms1
+log "the number of vms required without lkp on them: $n1"
+touch /var/lib/lkp-automation-data/state-files/nvms2
+echo "$n2" > /var/lib/lkp-automation-data/state-files/nvms2
+log "the number of vms required with lkp on them: $n2"
 
 log "Captured the vms for the 2nd and 3rd stage of the lkp running, which are $VM and $LKP" 
 log "Captured the user input"

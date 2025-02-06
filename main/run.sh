@@ -38,6 +38,40 @@ update_state() {
 	echo "$1" > $STATE_FILE
 }
 
+
+create_vms() {
+	n=$2
+	VM=$1
+	for((i=2; i<=n; i++)); do
+		NEW_VM="${VM}${i}"
+		log "Creating new vm name $NEW_VM"
+		virt-clone --original "$VM" --name "$NEW_VM" --auto-clone || handle_error "Couldn't create new vm named $NEW_VM"
+		log "created $NEW_VM successfully"
+	done
+}
+
+start_vms() {
+        n=$2
+        VM=$1
+        for((i=2; i<=n; i++)); do
+                NEW_VM="${VM}${i}"
+                virsh start $NEW_VM
+		log "Started $NEW_VM successfully"
+        done
+}
+
+delete_vms() {
+        n=$2
+        VM=$1
+        for((i=2; i<=n; i++)); do
+                NEW_VM="${VM}${i}"
+                virsh destroy $NEW_VM
+                virsh undefine $NEW_VM --remove-all-storage
+		log "Deleted $NEW_VM" successfully
+        done
+}
+
+
 log "Enterance of main function"
 mkdir /var/lib/lkp-automation-data/results
 log "created results directory in location /var/lib/lkp-automation-data/results"
@@ -46,6 +80,10 @@ sudo touch $OUTPUT_FILE
 
 VM=$(cat /var/lib/lkp-automation-data/VM)
 LKP=$(cat /var/lib/lkp-automation-data/LKP)
+n1=$(cat /var/lib/lkp-automation-data/state-files/nvms1)
+n2=$(cat /var/lib/lkp-automation-data/state-files/nvms2)
+
+
 
 BR1=/var/lib/lkp-automation-data/results/without_vms_base
 BR2=/var/lib/lkp-automation-data/results/base_with_5_vms
@@ -83,15 +121,9 @@ while true; do
 				/lkp/result/result.sh > /var/lib/lkp-automation-data/results/without_vms_base
 				awk '{print $0","}' /var/lib/lkp-automation-data/results/without_vms_base >> $OUTPUT_FILE
 				virsh destroy $VM
-				virt-clone --original $VM --name ${vm}2 --auto-clone
-				virt-clone --original $VM --name ${vm}3 --auto-clone
-				virt-clone --original $VM --name ${vm}4 --auto-clone
-				virt-clone --original $VM --name ${vm}5 --auto-clone
+				create_vms $VM $n1
 				virsh start $VM
-                                virsh start ${VM}2
-                                virsh start ${VM}3
-                                virsh start ${VM}4
-                                virsh start ${VM}5
+				start_vms $VM $n1
 				rm -rf /lkp/result/hackbench/*
 				rm -rf /lkp/result/ebizzy/*
 				rm -rf /lkp/result/unixbench/*
@@ -101,47 +133,21 @@ while true; do
                                 touch /var/lib/lkp-automation-data/results/base_with_5_vms
                                 /lkp/result/result.sh > /var/lib/lkp-automation-data/results/base_with_5_vms
 				/var/lib/lkp-automation-data/shutdown-vms.sh
-				virsh undefine ${VM}2 --remove-all-storage
-				virsh undefine ${VM}3 --remove-all-storage
-				virsh undefine ${VM}4 --remove-all-storage
-				virsh undefine ${VM}5 --remove-all-storage
+				delete_vms $VM $n1
 				rm -rf /lkp/result/hackbench/*
                                 rm -rf /lkp/result/ebizzy/*
                                 rm -rf /lkp/result/unixbench/*
-				virt-clone --original $LKP --name ${LKP}2 --autoclone
-				virt-clone --original $LKP --name ${LKP}3 --autoclone
-				virt-clone --original $LKP --name ${LKP}4 --autoclone
-				virt-clone --original $LKP --name ${LKP}5 --autoclone
-				virt-clone --original $LKP --name ${LKP}6 --autoclone
-				virt-clone --original $LKP --name ${LKP}7 --autoclone
-				virt-clone --original $LKP --name ${LKP}8 --autoclone
-				virt-clone --original $LKP --name ${LKP}9 --autoclone
-				virt-clone --original $LKP --name ${LKP}10 --autoclone
+				virsh destroy $LKP
+				create_vms $LKP $n2
+				start_vms $LKP $n2
 				virsh start $LKP
-				virsh start ${LKP}2
-				virsh start ${LKP}3
-				virsh start ${LKP}4
-				virsh start ${LKP}5
-				virsh start ${LKP}6
-				virsh start ${LKP}7
-				virsh start ${LKP}8
-				virsh start ${LKP}9
-				virsh start ${LKP}10
 				/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
                                 cd /lkp/result/
 				BR3=/var/lib/lkp-automation-data/results/base_with_10_vms
                                 touch /var/lib/lkp-automation-data/results/base_with_10_vms
                                 /lkp/result/result.sh > /var/lib/lkp-automation-data/results/base_with_10_vms
                                 /var/lib/lkp-automation-data/shutdown-vms.sh
-				virsh undefine ${LKP}2 --remove-all-storage
-				virsh undefine ${LKP}3 --remove-all-storage
-				virsh undefine ${LKP}4 --remove-all-storage
-				virsh undefine ${LKP}5 --remove-all-storage
-				virsh undefine ${LKP}6 --remove-all-storage
-				virsh undefine ${LKP}7 --remove-all-storage
-				virsh undefine ${LKP}8 --remove-all-storage
-				virsh undefine ${LKP}9 --remove-all-storage
-				virsh undefine ${LKP}10 --remove-all-storage
+				delete_vms $LKP $n2
 				BASE_OUTPUT=/var/lib/lkp-automation-data/results/base-results.csv
 				touch $BASE_OUTPUT
 				echo "Without vms,with 5 vms,with 10 vms" > $BASE_OUTPUT
@@ -178,15 +184,9 @@ while true; do
 				paste -d '' $OUTPUT_FILE /var/lib/lkp-automation-data/results/without_vms_with_patches > temp.csv && mv temp.csv $OUTPUT_FILE
 				
 				virsh destroy $VM
-				virt-clone --original $VM --name ${vm}2 --auto-clone
-				virt-clone --original $VM --name ${vm}3 --auto-clone
-				virt-clone --original $VM --name ${vm}4 --auto-clone
-				virt-clone --original $VM --name ${vm}5 --auto-clone
+				create_vms $VM $n1
 				virsh start $VM
-                                virsh start ${VM}2
-                                virsh start ${VM}3
-                                virsh start ${VM}4
-                                virsh start ${VM}5
+				start_vms $VM $n1
 				rm -rf /lkp/result/hackbench/*
 				rm -rf /lkp/result/ebizzy/*
 				rm -rf /lkp/result/unixbench/*
@@ -196,47 +196,21 @@ while true; do
                                 touch /var/lib/lkp-automation-data/results/patch_with_5_vms
                                 /lkp/result/result.sh > /var/lib/lkp-automation-data/results/patch_with_5_vms
 				/var/lib/lkp-automation-data/shutdown-vms.sh
-				virsh undefine ${VM}2 --remove-all-storage
-				virsh undefine ${VM}3 --remove-all-storage
-				virsh undefine ${VM}4 --remove-all-storage
-				virsh undefine ${VM}5 --remove-all-storage
+				delete_vms $VM $n1
 				rm -rf /lkp/result/hackbench/*
                                 rm -rf /lkp/result/ebizzy/*
                                 rm -rf /lkp/result/unixbench/*
-				virt-clone --original $LKP --name ${LKP}2 --autoclone
-				virt-clone --original $LKP --name ${LKP}3 --autoclone
-				virt-clone --original $LKP --name ${LKP}4 --autoclone
-				virt-clone --original $LKP --name ${LKP}5 --autoclone
-				virt-clone --original $LKP --name ${LKP}6 --autoclone
-				virt-clone --original $LKP --name ${LKP}7 --autoclone
-				virt-clone --original $LKP --name ${LKP}8 --autoclone
-				virt-clone --original $LKP --name ${LKP}9 --autoclone
-				virt-clone --original $LKP --name ${LKP}10 --autoclone
+				virsh destroy $LKP
+				create_vms $LKP $n2
 				virsh start $LKP
-				virsh start ${LKP}2
-				virsh start ${LKP}3
-				virsh start ${LKP}4
-				virsh start ${LKP}5
-				virsh start ${LKP}6
-				virsh start ${LKP}7
-				virsh start ${LKP}8
-				virsh start ${LKP}9
-				virsh start ${LKP}10
+				start_vms $LKP $n2
 				/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
                                 cd /lkp/result/
 				PR3=/var/lib/lkp-automation-data/results/patch_with_10_vms
                                 touch /var/lib/lkp-automation-data/results/patch_with_10_vms
                                 /lkp/result/result.sh > /var/lib/lkp-automation-data/results/patch_with_10_vms
                                 /var/lib/lkp-automation-data/shutdown-vms.sh
-				virsh undefine ${LKP}2 --remove-all-storage
-				virsh undefine ${LKP}3 --remove-all-storage
-				virsh undefine ${LKP}4 --remove-all-storage
-				virsh undefine ${LKP}5 --remove-all-storage
-				virsh undefine ${LKP}6 --remove-all-storage
-				virsh undefine ${LKP}7 --remove-all-storage
-				virsh undefine ${LKP}8 --remove-all-storage
-				virsh undefine ${LKP}9 --remove-all-storage
-				virsh undefine ${LKP}10 --remove-all-storage
+				delete_vms $LKP $n2
 				PATCH_OUTPUT=/var/lib/lkp-automation-data/results/patch-results.csv
 				touch $PATCH_OUTPUT
 				echo "Without vms,with 5 vms,with 10 vms" > $PATCH_OUTPUT
