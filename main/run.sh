@@ -147,6 +147,7 @@ while true; do
 							cat /lkp/result/test.result > $BR2
 							/var/lib/lkp-automation-data/shutdown-vms.sh
 							delete_vms $VM $n1
+							update_sub_state "3"
 							;;
 						"3")
 							rm -rf /lkp/result/hackbench/*
