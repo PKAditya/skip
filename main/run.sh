@@ -5,16 +5,15 @@ echo "$loc"
 log="/var/log/lkp-automation-data/reboot-log"
 
 STATE_FILE="/var/lib/lkp-automation-data/state-files/main-state"
+SUB_STATE_FILE="/var/lib/lkp-automation-data/state-files/sub-state"
 if [ ! -f $log ]; then
 	touch $log
 	chmod 666 $log
 fi
 if [ ! -f $STATE_FILE ]; then
-#        touch $STATE_FILE
-        touch $log
+        touch $STATE_FILE
 	chmod 666 $STATE_FILE
-	chmod 666 $log
-        echo "1" > $STATE_FILE 
+        echo "1" > $STATE_FILE
 fi
 
 BASE_LOCAL_VERSION=$(cat /var/lib/lkp-automation-data/state-files/base-kernel-version)
@@ -38,6 +37,10 @@ update_state() {
 	echo "$1" > $STATE_FILE
 }
 
+update_sub_state() {
+	chmod 666 $SUB_STATE_FILE
+	echo $1 >$SUB_STATE_FILE
+}
 
 create_vms() {
 	n=$2
@@ -112,47 +115,63 @@ while true; do
 		"2")
 			tmp=$(uname -r)
 			if [[ "$BASE_LOCAL_VERSION" == "$tmp" ]]; then
-				/var/lib/lkp-automation-data/shutdown-vms.sh
-				echo "Base kernel is installed on the system, starting the lkp"
-				/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
-				cd /lkp/result/
-				BR1="/var/lib/lkp-automation-data/results/without_vms_base"
-				touch $BR1
-				cat /lkp/result/test.result > $BR1 
-				#awk '{print $0","}' /var/lib/lkp-automation-data/results/without_vms_base >> $OUTPUT_FILE
-				virsh destroy $VM
-				create_vms $VM $n1
-				virsh start $VM
-				start_vms $VM $n1
-				rm -rf /lkp/result/hackbench/*
-				rm -rf /lkp/result/ebizzy/*
-				rm -rf /lkp/result/unixbench/*
-				/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
-                                cd /lkp/result/
-				BR2="/var/lib/lkp-automation-data/results/base_with_5_vms"
-                                touch $BR2 
-				cat /lkp/result/test.result > $BR2
-				/var/lib/lkp-automation-data/shutdown-vms.sh
-				delete_vms $VM $n1
-				rm -rf /lkp/result/hackbench/*
-                                rm -rf /lkp/result/ebizzy/*
-                                rm -rf /lkp/result/unixbench/*
-				virsh destroy $LKP
-				create_vms $LKP $n2
-				start_vms $LKP $n2
-				virsh start $LKP
-				/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
-                                cd /lkp/result/
-				BR3="/var/lib/lkp-automation-data/results/base_with_10_vms"
-                                touch $BR3 
-				cat /lkp/result/test.result > $BR3
-                                /var/lib/lkp-automation-data/shutdown-vms.sh
-				delete_vms $LKP $n2
-				BASE_OUTPUT=/var/lib/lkp-automation-data/results/base-results.csv
-				touch $BASE_OUTPUT
-				echo "Without vms,with $n1 vms,with $n2 vms" > $BASE_OUTPUT
-				paste -d',' "$BR1" "$BR2" "$BR3" >> $BASE_OUTPUT
-				update_state "3"
+				if [ ! -f "$SUB_STATE_FILE" ]; then
+					touch $SUB_STATE_FILE
+					chmod 666 $SUB_STATE_FILE
+					echo "1" > $SUB_STATE_FILE
+				fi
+				while true; do
+					current_sub_state=$(cat $SUB_STATE_FILE)
+					case $current_sub_state in
+						"1")
+							/var/lib/lkp-automation-data/shutdown-vms.sh
+							echo "Base kernel is installed on the system, starting the lkp"
+							/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
+							BR1="/var/lib/lkp-automation-data/results/without_vms_base"
+							touch $BR1
+							cat /lkp/result/test.result > $BR1 
+							update_sub_state "2"
+							;;
+						"2")
+							#awk '{print $0","}' /var/lib/lkp-automation-data/results/without_vms_base >> $OUTPUT_FILE
+							virsh destroy $VM
+							create_vms $VM $n1
+							virsh start $VM
+							start_vms $VM $n1
+							rm -rf /lkp/result/hackbench/*
+							rm -rf /lkp/result/ebizzy/*
+							rm -rf /lkp/result/unixbench/*
+							/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
+							BR2="/var/lib/lkp-automation-data/results/base_with_5_vms"
+			                                touch $BR2 
+							cat /lkp/result/test.result > $BR2
+							/var/lib/lkp-automation-data/shutdown-vms.sh
+							delete_vms $VM $n1
+							;;
+						"3")
+							rm -rf /lkp/result/hackbench/*
+			                                rm -rf /lkp/result/ebizzy/*
+                			                rm -rf /lkp/result/unixbench/*
+							virsh destroy $LKP
+							create_vms $LKP $n2
+							start_vms $LKP $n2
+							virsh start $LKP
+							/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
+							BR3="/var/lib/lkp-automation-data/results/base_with_10_vms"
+		        	                        touch $BR3 
+							cat /lkp/result/test.result > $BR3
+                                			/var/lib/lkp-automation-data/shutdown-vms.sh
+							delete_vms $LKP $n2
+							BASE_OUTPUT=/var/lib/lkp-automation-data/results/base-results.csv
+							touch $BASE_OUTPUT
+							echo "Without vms,with $n1 vms,with $n2 vms" > $BASE_OUTPUT
+							paste -d',' "$BR1" "$BR2" "$BR3" >> $BASE_OUTPUT
+							update_state "3"
+							rm -rf $SUB_STATE_FILE
+							;;
+					esac
+					sleep 5
+				done
 			else
 				handle_error "Base Kernel is not installed on the system"
 			fi
@@ -175,46 +194,65 @@ while true; do
 		"4")
 			tmp2=$(uname -r)
 			if [[ "$PATCH_LOCAL_VERSION" == "$tmp2" ]]; then
-				/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
-				PR1="/var/lib/lkp-automation-data/results/without_vms_with_patches"
-				touch $PR1
-				cat /lkp/result/test.result > $PR1
-				paste -d '' $OUTPUT_FILE /var/lib/lkp-automation-data/results/without_vms_with_patches > temp.csv && mv temp.csv $OUTPUT_FILE
-				
-				virsh destroy $VM
-				create_vms $VM $n1
-				virsh start $VM
-				start_vms $VM $n1
-				rm -rf /lkp/result/hackbench/*
-				rm -rf /lkp/result/ebizzy/*
-				rm -rf /lkp/result/unixbench/*
-				/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
-				PR2="/var/lib/lkp-automation-data/results/patch_with_5_vms"
-                                touch "$PR2"
-				cat /lkp/result/test.result > $PR2 
-				/var/lib/lkp-automation-data/shutdown-vms.sh
-				delete_vms $VM $n1
-				rm -rf /lkp/result/hackbench/*
-                                rm -rf /lkp/result/ebizzy/*
-                                rm -rf /lkp/result/unixbench/*
-				virsh destroy $LKP
-				create_vms $LKP $n2
-				virsh start $LKP
-				start_vms $LKP $n2
-				/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
-                                cd /lkp/result/
-				PR3="/var/lib/lkp-automation-data/results/patch_with_10_vms"
-                                touch $PR3 
-				cat /lkp/result/test.result > /var/lib/lkp-automation-data/results/patch_with_10_vms
-                                /var/lib/lkp-automation-data/shutdown-vms.sh
-				delete_vms $LKP $n2
-				PATCH_OUTPUT=/var/lib/lkp-automation-data/results/patch-results.csv
-				touch $PATCH_OUTPUT
-				echo "Without vms,with $n1 vms,with $n2 vms" > $PATCH_OUTPUT
-				paste -d',' "$PR1" "$PR2" "$PR3" >> $PATCH_OUTPUT
-				update_state "5"
-				echo "Kernel with patches is installed on the system, starting the lkp"
-				log "SUCCESSFULLY Completed the booting."
+				if [ ! -f "$SUB_STATE_FILE" ]; then
+                                        touch $SUB_STATE_FILE
+                                        chmod 666 $SUB_STATE_FILE
+                                        echo "1" > $SUB_STATE_FILE
+                                fi
+                                while true; do
+					current_sub_state=$(cat $SUB_STATE_FILE)
+                                	case $current_sub_state in
+						"1")
+							/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
+							PR1="/var/lib/lkp-automation-data/results/without_vms_with_patches"
+							touch $PR1
+							cat /lkp/result/test.result > $PR1
+							paste -d '' $OUTPUT_FILE /var/lib/lkp-automation-data/results/without_vms_with_patches > temp.csv && mv temp.csv $OUTPUT_FILE
+							update_sub_state "1"
+							;;
+						"2")
+							virsh destroy $VM
+							create_vms $VM $n1
+							virsh start $VM
+							start_vms $VM $n1
+							rm -rf /lkp/result/hackbench/*
+							rm -rf /lkp/result/ebizzy/*
+							rm -rf /lkp/result/unixbench/*
+							/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
+							PR2="/var/lib/lkp-automation-data/results/patch_with_5_vms"
+                			                touch "$PR2"
+							cat /lkp/result/test.result > $PR2 
+							/var/lib/lkp-automation-data/shutdown-vms.sh
+							delete_vms $VM $n1
+							update_sub_state "3"
+							;;
+						"3")
+							rm -rf /lkp/result/hackbench/*
+                			                rm -rf /lkp/result/ebizzy/*
+                                			rm -rf /lkp/result/unixbench/*
+							virsh destroy $LKP
+							create_vms $LKP $n2
+							virsh start $LKP
+							start_vms $LKP $n2
+							/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
+                                			cd /lkp/result/
+							PR3="/var/lib/lkp-automation-data/results/patch_with_10_vms"
+                		                	touch $PR3 
+							cat /lkp/result/test.result > /var/lib/lkp-automation-data/results/patch_with_10_vms
+			                                /var/lib/lkp-automation-data/shutdown-vms.sh
+							delete_vms $LKP $n2
+							PATCH_OUTPUT=/var/lib/lkp-automation-data/results/patch-results.csv
+							touch $PATCH_OUTPUT
+							echo "Without vms,with $n1 vms,with $n2 vms" > $PATCH_OUTPUT
+							paste -d',' "$PR1" "$PR2" "$PR3" >> $PATCH_OUTPUT
+							echo "Kernel with patches is installed on the system, starting the lkp"
+							log "SUCCESSFULLY Completed the booting."
+							rm $SUB_STATE_FILE
+							update_state "5"
+							;;
+					esac
+					sleep 5
+				done
 			else
 				echo "couldn't install patches kernel"
 				handle_error "Couldn't install patches kernel"
