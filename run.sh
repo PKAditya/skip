@@ -69,6 +69,9 @@ chmod +x check_vm.sh
 $loc/check_vm.sh $VM || handle_error "$VM doesn't exists" 
 $loc/check_vm.sh $LKP || handle_error "$LKP doesn't exists"
 
+
+git config --global --add safe.directory $KERNEL_DIR
+
 echo $VM > /var/lib/lkp-automation-data/VM
 echo $LKP > /var/lib/lkp-automation-data/LKP
 

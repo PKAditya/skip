@@ -116,10 +116,10 @@ while true; do
 				echo "Base kernel is installed on the system, starting the lkp"
 				/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
 				cd /lkp/result/
-				BR1=/var/lib/lkp-automation-data/results/without_vms_base
-				touch /var/lib/lkp-automation-data/results/without_vms_base
-				/lkp/result/result.sh > /var/lib/lkp-automation-data/results/without_vms_base
-				awk '{print $0","}' /var/lib/lkp-automation-data/results/without_vms_base >> $OUTPUT_FILE
+				BR1="/var/lib/lkp-automation-data/results/without_vms_base"
+				touch $BR1
+				cat /lkp/result/test.result > $BR1 
+				#awk '{print $0","}' /var/lib/lkp-automation-data/results/without_vms_base >> $OUTPUT_FILE
 				virsh destroy $VM
 				create_vms $VM $n1
 				virsh start $VM
@@ -129,9 +129,9 @@ while true; do
 				rm -rf /lkp/result/unixbench/*
 				/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
                                 cd /lkp/result/
-				BR2=/var/lib/lkp-automation-data/results/base_with_5_vms
-                                touch /var/lib/lkp-automation-data/results/base_with_5_vms
-                                /lkp/result/result.sh > /var/lib/lkp-automation-data/results/base_with_5_vms
+				BR2="/var/lib/lkp-automation-data/results/base_with_5_vms"
+                                touch $BR2 
+				cat /lkp/result/test.result > $BR2
 				/var/lib/lkp-automation-data/shutdown-vms.sh
 				delete_vms $VM $n1
 				rm -rf /lkp/result/hackbench/*
@@ -143,14 +143,14 @@ while true; do
 				virsh start $LKP
 				/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
                                 cd /lkp/result/
-				BR3=/var/lib/lkp-automation-data/results/base_with_10_vms
-                                touch /var/lib/lkp-automation-data/results/base_with_10_vms
-                                /lkp/result/result.sh > /var/lib/lkp-automation-data/results/base_with_10_vms
+				BR3="/var/lib/lkp-automation-data/results/base_with_10_vms"
+                                touch $BR3 
+				cat /lkp/result/test.result > $BR3
                                 /var/lib/lkp-automation-data/shutdown-vms.sh
 				delete_vms $LKP $n2
 				BASE_OUTPUT=/var/lib/lkp-automation-data/results/base-results.csv
 				touch $BASE_OUTPUT
-				echo "Without vms,with 5 vms,with 10 vms" > $BASE_OUTPUT
+				echo "Without vms,with $n1 vms,with $n2 vms" > $BASE_OUTPUT
 				paste -d',' "$BR1" "$BR2" "$BR3" >> $BASE_OUTPUT
 				update_state "3"
 			else
@@ -176,11 +176,9 @@ while true; do
 			tmp2=$(uname -r)
 			if [[ "$PATCH_LOCAL_VERSION" == "$tmp2" ]]; then
 				/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
-				PR1=/var/lib/lkp-automation-data/results/without_vms_with_patches
-				touch /var/lib/lkp-automation-data/results/without_vms_with_patches
-				cd /lkp/result/
-				echo "" > /var/lib/lkp-automation-data/results/without_vms_with_patches 
-				/lkp/result/result.sh >> /var/lib/lkp-automation-data/results/without_vms_with_patches
+				PR1="/var/lib/lkp-automation-data/results/without_vms_with_patches"
+				touch $PR1
+				cat /lkp/result/test.result > $PR1
 				paste -d '' $OUTPUT_FILE /var/lib/lkp-automation-data/results/without_vms_with_patches > temp.csv && mv temp.csv $OUTPUT_FILE
 				
 				virsh destroy $VM
@@ -191,10 +189,9 @@ while true; do
 				rm -rf /lkp/result/ebizzy/*
 				rm -rf /lkp/result/unixbench/*
 				/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
-                                cd /lkp/result/
-				PR2=/var/lib/lkp-automation-data/results/patch_with_5_vms
-                                touch /var/lib/lkp-automation-data/results/patch_with_5_vms
-                                /lkp/result/result.sh > /var/lib/lkp-automation-data/results/patch_with_5_vms
+				PR2="/var/lib/lkp-automation-data/results/patch_with_5_vms"
+                                touch "$PR2"
+				cat /lkp/result/test.result > $PR2 
 				/var/lib/lkp-automation-data/shutdown-vms.sh
 				delete_vms $VM $n1
 				rm -rf /lkp/result/hackbench/*
@@ -206,14 +203,14 @@ while true; do
 				start_vms $LKP $n2
 				/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
                                 cd /lkp/result/
-				PR3=/var/lib/lkp-automation-data/results/patch_with_10_vms
-                                touch /var/lib/lkp-automation-data/results/patch_with_10_vms
-                                /lkp/result/result.sh > /var/lib/lkp-automation-data/results/patch_with_10_vms
+				PR3="/var/lib/lkp-automation-data/results/patch_with_10_vms"
+                                touch $PR3 
+				cat /lkp/result/test.result > /var/lib/lkp-automation-data/results/patch_with_10_vms
                                 /var/lib/lkp-automation-data/shutdown-vms.sh
 				delete_vms $LKP $n2
 				PATCH_OUTPUT=/var/lib/lkp-automation-data/results/patch-results.csv
 				touch $PATCH_OUTPUT
-				echo "Without vms,with 5 vms,with 10 vms" > $PATCH_OUTPUT
+				echo "Without vms,with $n1 vms,with $n2 vms" > $PATCH_OUTPUT
 				paste -d',' "$PR1" "$PR2" "$PR3" >> $PATCH_OUTPUT
 				update_state "5"
 				echo "Kernel with patches is installed on the system, starting the lkp"
@@ -224,6 +221,8 @@ while true; do
 			fi
 			;;
 		"5")
+			> $OUTPUT_FILE || handle_error "couldn't clear the old output results"
+			paste -d',' "$BR1" "$BR2" "$BR3" "$PR1" "$PR2" "$PR3" >> $OUTPUT_FILE
 			rm $STATE_FILE	
 			log "kernel is being changed to the kernel before the lkp has been run"
 			kernel_nameo=$(cat /var/lib/lkp-automation-data/previous-kernel-name)
