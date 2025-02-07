@@ -168,6 +168,7 @@ while true; do
 							paste -d',' "$BR1" "$BR2" "$BR3" >> $BASE_OUTPUT
 							update_state "3"
 							rm -rf $SUB_STATE_FILE
+							break
 							;;
 					esac
 					sleep 5
@@ -208,7 +209,7 @@ while true; do
 							touch $PR1
 							cat /lkp/result/test.result > $PR1
 							paste -d '' $OUTPUT_FILE /var/lib/lkp-automation-data/results/without_vms_with_patches > temp.csv && mv temp.csv $OUTPUT_FILE
-							update_sub_state "1"
+							update_sub_state "2"
 							;;
 						"2")
 							virsh destroy $VM
@@ -249,6 +250,7 @@ while true; do
 							log "SUCCESSFULLY Completed the booting."
 							rm $SUB_STATE_FILE
 							update_state "5"
+							break
 							;;
 					esac
 					sleep 5
