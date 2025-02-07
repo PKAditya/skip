@@ -46,7 +46,7 @@ if [ ! -d "/var/lib/lkp-automation-data/PACKAGES" ]; then
     mkdir -p /var/lib/lkp-automation-data/PACKAGES &> /dev/null
     log "Created a new directory /var/lib/lkp-automation-data/PACKAGES"
 else
-    glog "Directory /var/lib/lkp-automation-data/PACKAGES already exists, deleting the files inside the directory"
+    log "Directory /var/lib/lkp-automation-data/PACKAGES already exists, deleting the files inside the directory"
     rm -rf /var/lib/lkp-automation-data/PACKAGES/* &> /dev/null
 fi
 
