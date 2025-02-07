@@ -251,7 +251,7 @@ while true; do
                                 			cd /lkp/result/
 							PR3="/var/lib/lkp-automation-data/results/patch_with_10_vms"
                 		                	touch $PR3 
-							cat /lkp/result/test.result > /var/lib/lkp-automation-data/results/patch_with_10_vms
+							cat /lkp/result/test.result > $PR3
 			                                /var/lib/lkp-automation-data/shutdown-vms.sh
 							delete_vms $LKP $n2
 							PATCH_OUTPUT=/var/lib/lkp-automation-data/results/patch-results.csv
