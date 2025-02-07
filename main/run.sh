@@ -26,7 +26,7 @@ log () {
 
 handle_error() {
         log "Error: $1"
-        echo "Script failed, Check out the logs in /usr/lib/automation-logs for finding about the error"
+        echo "Script failed, Check out the logs in $log for finding about the error"
         exit 1
 }
 
@@ -86,7 +86,19 @@ LKP=$(cat /var/lib/lkp-automation-data/LKP)
 n1=$(cat /var/lib/lkp-automation-data/state-files/nvms1)
 n2=$(cat /var/lib/lkp-automation-data/state-files/nvms2)
 
-
+# Add these checks after the initial state file checks
+if [ ! -f "/var/lib/lkp-automation-data/VM" ]; then
+    handle_error "VM configuration file not found"
+fi
+if [ ! -f "/var/lib/lkp-automation-data/LKP" ]; then
+    handle_error "LKP configuration file not found"
+fi
+if [ ! -f "/var/lib/lkp-automation-data/state-files/nvms1" ]; then
+    handle_error "nvms1 configuration file not found"
+fi
+if [ ! -f "/var/lib/lkp-automation-data/state-files/nvms2" ]; then
+    handle_error "nvms2 configuration file not found"
+fi
 
 BR1=/var/lib/lkp-automation-data/results/without_vms_base
 BR2=/var/lib/lkp-automation-data/results/base_with_5_vms
@@ -209,7 +221,6 @@ while true; do
 							PR1="/var/lib/lkp-automation-data/results/without_vms_with_patches"
 							touch $PR1
 							cat /lkp/result/test.result > $PR1
-							paste -d '' $OUTPUT_FILE /var/lib/lkp-automation-data/results/without_vms_with_patches > temp.csv && mv temp.csv $OUTPUT_FILE
 							update_sub_state "2"
 							;;
 						"2")
