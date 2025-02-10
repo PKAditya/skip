@@ -139,7 +139,6 @@ while true; do
 							/var/lib/lkp-automation-data/shutdown-vms.sh
 							echo "Base kernel is installed on the system, starting the lkp"
 							/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
-							BR1="/var/lib/lkp-automation-data/results/without_vms_base"
 							touch $BR1
 							cat /lkp/result/test.result > $BR1 
 							update_sub_state "2"
@@ -154,7 +153,6 @@ while true; do
 							rm -rf /lkp/result/ebizzy/*
 							rm -rf /lkp/result/unixbench/*
 							/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
-							BR2="/var/lib/lkp-automation-data/results/base_with_5_vms"
 			                                touch $BR2 
 							cat /lkp/result/test.result > $BR2
 							/var/lib/lkp-automation-data/shutdown-vms.sh
@@ -170,7 +168,6 @@ while true; do
 							start_vms $LKP $n2
 							virsh start $LKP
 							/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
-							BR3="/var/lib/lkp-automation-data/results/base_with_10_vms"
 		        	                        touch $BR3 
 							cat /lkp/result/test.result > $BR3
                                 			/var/lib/lkp-automation-data/shutdown-vms.sh
@@ -218,7 +215,6 @@ while true; do
                                 	case $current_sub_state in
 						"1")
 							/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
-							PR1="/var/lib/lkp-automation-data/results/without_vms_with_patches"
 							touch $PR1
 							cat /lkp/result/test.result > $PR1
 							update_sub_state "2"
@@ -232,7 +228,6 @@ while true; do
 							rm -rf /lkp/result/ebizzy/*
 							rm -rf /lkp/result/unixbench/*
 							/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
-							PR2="/var/lib/lkp-automation-data/results/patch_with_5_vms"
                 			                touch "$PR2"
 							cat /lkp/result/test.result > $PR2 
 							/var/lib/lkp-automation-data/shutdown-vms.sh
@@ -249,7 +244,6 @@ while true; do
 							start_vms $LKP $n2
 							/var/lib/lkprun.sh || handle_error "Problem with running the lkp-tests"
                                 			cd /lkp/result/
-							PR3="/var/lib/lkp-automation-data/results/patch_with_10_vms"
                 		                	touch $PR3 
 							cat /lkp/result/test.result > $PR3
 			                                /var/lib/lkp-automation-data/shutdown-vms.sh
@@ -286,8 +280,6 @@ while true; do
 			patch="/boot/vmlinuz-$PATCH_LOCAL_VERSION"
 			sudo yum remove $patch -y
 			log "uninstalled /boot/vmlinuz-$PATCH_LOCAL_VERSION kernel image from the system"
-			systemctl daemon-reload
-			systemctl stop lkp.service
 			reboot
 			;;
 	esac
