@@ -101,12 +101,12 @@ if [ ! -f "/var/lib/lkp-automation-data/state-files/nvms2" ]; then
 fi
 
 TS=/var/lib/lkp-automation-data/results/test_suites
-BR1=/var/lib/lkp-automation-data/results/without_vms_base
-BR2=/var/lib/lkp-automation-data/results/base_with_5_vms
-BR3=/var/lib/lkp-automation-data/results/base_with_10_vms
-PR1=/var/lib/lkp-automation-data/results/without_vms_with_patches
-PR2=/var/lib/lkp-automation-data/results/patch_with_5_vms
-PR3=/var/lib/lkp-automation-data/results/patch_with_10_vms
+BR1=/var/lib/lkp-automation-data/results/Base-without_vms
+BR2=/var/lib/lkp-automation-data/results/Base-with_vms
+BR3=/var/lib/lkp-automation-data/results/Base-with_lkp_vms
+PR1=/var/lib/lkp-automation-data/results/Patch-without_vms
+PR2=/var/lib/lkp-automation-data/results/Patch-with_vms
+PR3=/var/lib/lkp-automation-data/results/Patch-with_lkp_vms
 
 
 while true; do
