@@ -48,7 +48,7 @@ create_vms() {
 	for((i=2; i<=n; i++)); do
 		NEW_VM="${VM}${i}"
 		log "Creating new vm name $NEW_VM"
-		virt-clone --original "$VM" --name "$NEW_VM" --auto-clone || handle_error "Couldn't create new vm named $NEW_VM"
+		virt-clone --original "$VM" --name "$NEW_VM" --auto-clone 
 		log "created $NEW_VM successfully"
 	done
 }
