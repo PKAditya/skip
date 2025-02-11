@@ -251,7 +251,7 @@ while true; do
                                 			cd /lkp/result/
                 		                	touch $PR3
 							echo "Patch-with $n2 lkp vms" > $PR3 
-							cat /lkp/result/test.result > $PR3
+							cat /lkp/result/test.result >> $PR3
 			                                /var/lib/lkp-automation-data/shutdown-vms.sh
 							delete_vms $LKP $n2
 							PATCH_OUTPUT=/var/lib/lkp-automation-data/results/patch-results.csv
@@ -275,7 +275,7 @@ while true; do
 		"5")
 			/var/lib/lkp-automation-data/shutdown-vms.sh
 			> $OUTPUT_FILE || handle_error "couldn't clear the old output results"
-			paste -d',' "$TS" "$BR1" "$BR2" "$BR3" "$PR1" "$PR2" "$PR3" >> $OUTPUT_FILE
+			paste -d',' "$TS" "$BR1" "$PR1" "$BR2" "$PR2" "$BR3" "$PR3" >> $OUTPUT_FILE
 			rm $STATE_FILE	
 			log "kernel is being changed to the kernel before the lkp has been run"
 			kernel_nameo=$(cat /var/lib/lkp-automation-data/previous-kernel-name)
