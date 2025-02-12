@@ -20,14 +20,14 @@ handle_error() {
 
 log "Entered directory $loc/centos/kernel"
 log "Installing dependencies required for the kernel build"
-$loc/centos/kernel/dependencies.sh $PASS || handle_error "Failed to run $loc/centos/kernel/dependencies.sh"
+$loc/centos/kernel/dependencies.sh || handle_error "Failed to run $loc/centos/kernel/dependencies.sh"
 log "Successfully installed kernel build essential dependencies"
 
 if [[ -d $KERNEL_DIR ]]; then
 	cd "$KERNEL_DIR" || handle_error "Couldn't switch to $KERNEL_DIR, give proper input"
-        $loc/centos/kernel/config.sh $KERNEL_DIR $LOCAL_VERSION $PASS || handle_error "Failed running $loc/centos/kernel/config.sh"
+        $loc/centos/kernel/config.sh $KERNEL_DIR $LOCAL_VERSION || handle_error "Failed running $loc/centos/kernel/config.sh"
 
-	$loc/centos/kernel/install.sh $LOCAL_VERSION $PASS || handle_error "Cannot build the configured kernel."
+	$loc/centos/kernel/install.sh $LOCAL_VERSION || handle_error "Cannot build the configured kernel."
 else
         handle_error "Failed to change to kernel directory, Directory $KERNEL_DIR doesn't exists"
 fi
