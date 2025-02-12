@@ -5,7 +5,7 @@ yum install python3-pip -y &> /dev/null
 pip install pyfiglet &> /dev/null
 python3 -m pyfiglet "LKP TESTS"
 # Helpers for logs
-
+pip install pandas openpyxl &> /dev/null
 user=$(echo $USER)
 if [ "$USER" != "root" ]; then
    echo "Error: Must run as root"
@@ -114,8 +114,8 @@ if [ "$distro" == "ubuntu" ]; then
 	log "Entered directory ubuntu"
 	log "Creating rpm for Patch_kernel"
 	$loc/ubuntu/run.sh $loc $KERNEL_DIR $PATCH_LOCAL_VERSION
-	log "Created rpm for Patch_kernel"
-        log "Creating rpm for Base_kernel"
+	log "Created deb package for Patch_kernel"
+        log "Creating deb pkg for Base_kernel"
 	cd $KERNEL_DIR || handle_error "Failed to navigate to $KERNEL_DIR"
 	git switch $BRANCH || handle_error "Couldn't switch to $BRANCH, aborting...."
 	git reset --hard $BASE_COMMIT || handle_error "couldn't reset head to the $BASE_COMMIT"
@@ -198,11 +198,6 @@ else
 		handle_error "Couldn't install lkp or hackbench, install them manually and run the lkp.service file"
 	fi
 fi
-
-cd $loc
-cd ..
-cd LKP_Automated
-sudo chmod +x /lkp/result/result.sh
 
 chmod 777 /var/lib/lkp-automation-data/run.sh
 chmod 777 /etc/systemd/system/lkp.service
