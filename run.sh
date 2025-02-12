@@ -110,7 +110,11 @@ cd $KERNEL_DIR || handle_error "Failed to navigate to $KERNEL_DIR"
 log "Navigated to $KERNEL_DIR"
 git switch $BRANCH || handle_error "Couldn't switch to $BRANCH, aborting...."
 
-if [ "$distro" == "ubuntu" ]; then
+if command -v apt >/dev/null 2>&1; then
+	echo "----------------------------"
+	echo "Detected Debian based system"
+	echo "----------------------------"
+	echo ""
 	log "Entered directory ubuntu"
 	log "Creating rpm for Patch_kernel"
 	$loc/ubuntu/run.sh $loc $KERNEL_DIR $PATCH_LOCAL_VERSION
@@ -129,7 +133,11 @@ if [ "$distro" == "ubuntu" ]; then
 	touch /var/lib/lkp-automation-data/run.sh
 	cp $loc/main/ubuntu-run.sh /var/lib/lkp-automation-data/run.sh
 
-else
+elif command -v dnf >/dev/null 2>&1 || command -v yum >/dev/null 2>&1; then
+	echo "--------------------------"
+	echo "Detected RHEL based system"
+	echo "--------------------------"
+	echo ""
 	log "Intializing the steps to build the kernel with patches"
 	$loc/centos/run.sh $loc $KERNEL_DIR $PATCH_LOCAL_VERSION
 	touch /var/lib/lkp-automation-data/state-files/patch-kernel-version
@@ -146,6 +154,10 @@ else
 	rm /var/lib/lkp-automation-data/run.sh
 	touch /var/lib/lkp-automation-data/run.sh
 	cp $loc/main/run.sh /var/lib/lkp-automation-data/run.sh
+
+else
+	handle_error "This system is neither debian nor RHEL. System not supported"
+
 fi
 touch /var/lib/lkp-automation-data/shutdown-vms.sh
 cp $loc/shutdown-vms.sh /var/lib/lkp-automation-data/shutdown-vms.sh
