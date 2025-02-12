@@ -114,12 +114,21 @@ if [ "$distro" == "ubuntu" ]; then
 	log "Entered directory ubuntu"
 	log "Creating rpm for Patch_kernel"
 	$loc/ubuntu/run.sh $loc $KERNEL_DIR $PATCH_LOCAL_VERSION
-	log "Created deb package for Patch_kernel"
-        log "Creating deb pkg for Base_kernel"
+	touch /var/lib/lkp-automation-data/state-files/patch-kernel-version
+        cp /var/lib/lkp-automation-data/state-files/kernel-version /var/lib/lkp-automation-data/state-files/patch-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
+        log "Successfully built the kernel patches."
+        log "Intializing the steps to build the base kernel"
 	cd $KERNEL_DIR || handle_error "Failed to navigate to $KERNEL_DIR"
 	git switch $BRANCH || handle_error "Couldn't switch to $BRANCH, aborting...."
 	git reset --hard $BASE_COMMIT || handle_error "couldn't reset head to the $BASE_COMMIT"
 	$loc/ubuntu/run.sh $loc $KERNEL_DIR $BASE_LOCAL_VERSION
+        touch /var/lib/lkp-automation-data/state-files/base-kernel-version
+        cp /var/lib/lkp-automation-data/state-files/kernel-version /var/lib/lkp-automation-data/state-files/base-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
+        log "Successfully built the base kernel"
+	rm /var/lib/lkp-automation-data/run.sh
+	touch /var/lib/lkp-automation-data/run.sh
+	cp $loc/main/ubuntu-run.sh /var/lib/lkp-automation-data/run.sh
+
 else
 	log "Intializing the steps to build the kernel with patches"
 	$loc/centos/run.sh $loc $KERNEL_DIR $PATCH_LOCAL_VERSION
@@ -134,8 +143,9 @@ else
 	touch /var/lib/lkp-automation-data/state-files/base-kernel-version
 	cp /var/lib/lkp-automation-data/state-files/kernel-version /var/lib/lkp-automation-data/state-files/base-kernel-version || handle_error "couldn't copy the installed kernel version to the state_file"
 	log "Successfully built the base kernel"
-
-
+	rm /var/lib/lkp-automation-data/run.sh
+	touch /var/lib/lkp-automation-data/run.sh
+	cp $loc/main/run.sh /var/lib/lkp-automation-data/run.sh
 fi
 touch /var/lib/lkp-automation-data/shutdown-vms.sh
 cp $loc/shutdown-vms.sh /var/lib/lkp-automation-data/shutdown-vms.sh

@@ -2,12 +2,9 @@
 
 loc=$1
 KERNEL_DIR=$2
-LOCAL_VERSION="-auto-base"
+LOCAL_VERSION=$3
 
-mkdir /usr/lib/automation-logs/reboot_tmp &> /dev/null
-log=/usr/lib/automation-logs/reboot_tmp/log
-rm $log &> /dev/null
-touch $log
+log=/var/log/lkp-automation-data/pre-reboot-log
 
 # function defined to log the every step
 log() {
@@ -21,11 +18,11 @@ handle_error() {
 	exit 1
 }
 
-# user input for kernel directory
-# read -p "Enter the Kernel repository path: " KERNEL_DIR
-
+log "Entered directory $loc/ubuntu/kernel"
+log "Installing dependencies required for the kernel build"
 
 $loc/ubuntu/kernel/dependencies.sh || handle_error "Failed to run $loc/ubuntu/kernel/dependencies.sh"
+log "Successfully installed kernel build essential dependencies"
 
 if [[ -d $KERNEL_DIR ]]; then
 	cd "$KERNEL_DIR"
@@ -35,7 +32,7 @@ if [[ -d $KERNEL_DIR ]]; then
 	log "Successfully ran the configuration"
 
 	log "Proceeding with building the kernel configured with the local version"
-	$loc/ubuntu/kernel/install.sh || handle_error "Cannot build the configured kernel."
+	$loc/ubuntu/kernel/install.sh $LOCAL_VERSION || handle_error "Cannot build the configured kernel."
 else
         handle_error "Failed to change to kernel directory, Directory $KERNEL_DIR doesn't exists"
 fi
