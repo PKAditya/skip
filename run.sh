@@ -15,6 +15,7 @@ fi
 mkdir /var/log/lkp-automation-data &> /dev/null
 mkdir /var/lib/lkp-automation-data &> /dev/null
 mkdir /var/lib/lkp-automation-data/state-files &> /dev/null
+mkdir /var/lib/lkp-automation-data/results &> /dev/null
 log=/var/log/lkp-automation-data/pre-reboot-log
 touch $log &> /dev/null
 
@@ -140,6 +141,11 @@ touch /var/lib/lkp-automation-data/shutdown-vms.sh
 cp $loc/shutdown-vms.sh /var/lib/lkp-automation-data/shutdown-vms.sh
 chmod +x /var/lib/lkp-automation-data/shutdown-vms.sh
 
+# saving the results excel-generator to the workspace
+rm /var/lib/lkp-automation-data/results/excel-generator.py
+cp $loc/main/excel-generator.py /var/lib/lkp-automation-data/results/excel-generator.py
+chmod 777 /var/lib/lkp-automation-data/results/excel-generator.py
+
 # creating the service file, for running the lkp on both the kernels.
 
 
@@ -196,8 +202,6 @@ fi
 cd $loc
 cd ..
 cd LKP_Automated
-touch /lkp/result/result.sh
-cp result.sh /lkp/result/result.sh || handle_error "Couldn't copy the script that is needed to store the lkp results to /lkp/result directory "
 sudo chmod +x /lkp/result/result.sh
 
 chmod 777 /var/lib/lkp-automation-data/run.sh

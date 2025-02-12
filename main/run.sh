@@ -6,6 +6,8 @@ log="/var/log/lkp-automation-data/reboot-log"
 
 STATE_FILE="/var/lib/lkp-automation-data/state-files/main-state"
 SUB_STATE_FILE="/var/lib/lkp-automation-data/state-files/sub-state"
+
+# creation of log and state_files, if they do not exist
 if [ ! -f $log ]; then
 	touch $log
 	chmod 666 $log
@@ -75,11 +77,10 @@ delete_vms() {
 }
 
 
+#checking for the existance of results directory
 log "Enterance of main function"
 mkdir /var/lib/lkp-automation-data/results
 log "created results directory in location /var/lib/lkp-automation-data/results"
-OUTPUT_FILE="/var/lib/lkp-automation-data/results/result.csv"
-sudo touch $OUTPUT_FILE
 
 VM=$(cat /var/lib/lkp-automation-data/VM)
 LKP=$(cat /var/lib/lkp-automation-data/LKP)
@@ -146,7 +147,6 @@ while true; do
 							update_sub_state "2"
 							;;
 						"2")
-							#awk '{print $0","}' /var/lib/lkp-automation-data/results/without_vms_base >> $OUTPUT_FILE
 							virsh destroy $VM
 							create_vms $VM $n1
 							virsh start $VM
@@ -274,9 +274,9 @@ while true; do
 			;;
 		"5")
 			/var/lib/lkp-automation-data/shutdown-vms.sh
-			> $OUTPUT_FILE || handle_error "couldn't clear the old output results"
-			paste -d',' "$TS" "$BR1" "$PR1" "$BR2" "$PR2" "$BR3" "$PR3" >> $OUTPUT_FILE
-			rm $STATE_FILE	
+			python3 /var/lib/lkp-automation-data/results/excel-generator.xlsx
+			rm $STATE_FILE
+			rm $SUB_STATE_FILE	
 			log "kernel is being changed to the kernel before the lkp has been run"
 			kernel_nameo=$(cat /var/lib/lkp-automation-data/previous-kernel-name)
 			old_kernel=/boot/vmlinuz-$kernel_nameo
