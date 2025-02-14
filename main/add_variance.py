@@ -110,7 +110,7 @@ def modify_excel():
     
     # Save the modified file
     wb.save('/var/lib/lkp-automation-data/results/LKP-results.xlsx')
-    print("File has been modified and saved as 'modified_LKP-results.xlsx'")
+    print("File has been modified and saved as 'LKP-results.xlsx'")
 
 # Run the function
 modify_excel()
