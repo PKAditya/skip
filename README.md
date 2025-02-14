@@ -1,4 +1,4 @@
-# skip
+# LKP-Pipeline
 ## Getting Started
   LKP-Pipeline is designed to help kernel developers with the checks of regression with various test-suites. To start with the run, follow the below steps.
 
