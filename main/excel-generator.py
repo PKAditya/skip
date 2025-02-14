@@ -211,7 +211,7 @@ def create_excel():
         })
 
         # Save to Excel directly in the current directory
-        excel_file = '/var/lib/lkp-automation-data/results/LKP-results.xlsx'
+        excel_file = '/var/lib/lkp-automation-data/results/raw-LKP-results.xlsx'
         df.to_excel(excel_file, index=False)
 
 # Load the workbook to apply formatting

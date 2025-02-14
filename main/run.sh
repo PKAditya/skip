@@ -274,7 +274,8 @@ while true; do
 			;;
 		"5")
 			/var/lib/lkp-automation-data/shutdown-vms.sh
-			python3 /var/lib/lkp-automation-data/results/excel-generator.xlsx
+			python3 /var/lib/lkp-automation-data/results/excel-generator.py
+			python3 /var/lib/lkp-automation-data/results/add_variance.py
 			rm $STATE_FILE
 			rm $SUB_STATE_FILE	
 			log "kernel is being changed to the kernel before the lkp has been run"

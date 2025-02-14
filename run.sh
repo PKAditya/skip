@@ -168,6 +168,11 @@ rm /var/lib/lkp-automation-data/results/excel-generator.py
 cp $loc/main/excel-generator.py /var/lib/lkp-automation-data/results/excel-generator.py
 chmod 777 /var/lib/lkp-automation-data/results/excel-generator.py
 
+rm /var/lib/lkp-automation-data/results/add_variance.py
+cp $loc/main/add_variance.py /var/lib/lkp-automation-data/results/add_variance.py
+chmod 777 /var/lib/lkp-automation-data/results/add_variance.py
+
+
 # creating the service file, for running the lkp on both the kernels.
 
 
