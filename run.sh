@@ -5,7 +5,9 @@ yum install python3-pip -y &> /dev/null
 pip install pyfiglet &> /dev/null
 python3 -m pyfiglet "LKP TESTS"
 # Helpers for logs
-pip install pandas openpyxl &> /dev/null
+pip install pandas &> /dev/null
+pip install openpyxl &> /dev/null
+pip install netifaces &> /dev/null
 user=$(echo $USER)
 if [ "$USER" != "root" ]; then
    echo "Error: Must run as root"
